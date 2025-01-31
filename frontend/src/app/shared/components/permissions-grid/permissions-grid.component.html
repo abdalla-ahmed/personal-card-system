@@ -1,0 +1,149 @@
+<p-table
+	#permissionsDataGrid
+	[value]="dataSource()"
+	dataKey="id"
+	[showGridlines]="false"
+	[expandedRowKeys]="expandedRows"
+	(onRowExpand)="onRowExpand($event)"
+	(onRowCollapse)="onRowCollapse($event)"
+	[globalFilterFields]="['name', 'category']"
+	[scrollable]="true"
+	scrollHeight="300px"
+>
+	<ng-template #caption>
+		<div class="flex flex-row flex-wrap place-content-between gap-4">
+			<div class="flex flex-col">
+				<p-iconfield iconPosition="left">
+					<p-inputicon>
+						<i class="pi pi-search"></i>
+					</p-inputicon>
+					<input
+						pInputText
+						type="text"
+						(input)="permissionsDataGrid.filterGlobal($any($event.target).value, 'contains')"
+						placeholder="Search..."
+					/>
+				</p-iconfield>
+			</div>
+			<div class="flex flex-col">
+				<div class="flex flex-wrap justify-end gap-2">
+					<p-button label="Expand All" icon="pi pi-plus" text (onClick)="expandAll()" />
+					<p-button label="Collapse All" icon="pi pi-minus" text (onClick)="collapseAll()" />
+				</div>
+			</div>
+		</div>
+	</ng-template>
+	<ng-template #header>
+		<tr>
+			<th style="width: 5rem"></th>
+			<th pSortableColumn="name">Module<p-sortIcon field="name" /></th>
+			<th pSortableColumn="category">Category<p-sortIcon field="category" /></th>
+			<th>
+				<div class="flex flex-row flex-nowrap items-center gap-2">
+					<p-check-box
+						[binary]="true"
+						[ngModel]="allowViewTotalValue"
+						[indeterminate]="allowViewTotalValue == null"
+						name="allowView"
+						(onChange)="onSelectAllChanged($event)"
+					/>
+					<span>Allow View</span>
+				</div>
+			</th>
+			<th>
+				<div class="flex flex-row flex-nowrap items-center gap-2">
+					<p-check-box
+						[binary]="true"
+						[ngModel]="allowCreateTotalValue"
+						[indeterminate]="allowCreateTotalValue == null"
+						name="allowCreate"
+						(onChange)="onSelectAllChanged($event)"
+					/>
+					<div>Allow Create</div>
+				</div>
+			</th>
+			<th>
+				<div class="flex flex-row flex-nowrap items-center gap-2">
+					<p-check-box
+						[binary]="true"
+						[ngModel]="allowUpdateTotalValue"
+						[indeterminate]="allowUpdateTotalValue == null"
+						name="allowUpdate"
+						(onChange)="onSelectAllChanged($event)"
+					/>
+					<div>Allow Edit</div>
+				</div>
+			</th>
+			<th>
+				<div class="flex flex-row flex-nowrap items-center gap-2">
+					<p-check-box
+						[binary]="true"
+						[ngModel]="allowDeleteTotalValue"
+						[indeterminate]="allowDeleteTotalValue == null"
+						name="allowDelete"
+						(onChange)="onSelectAllChanged($event)"
+					/>
+					<div>Allow Delete</div>
+				</div>
+			</th>
+		</tr>
+	</ng-template>
+	<ng-template #body let-permission let-expanded="expanded">
+		<tr>
+			<td>
+				<div>
+					<p-button
+						[hidden]="!permission.extraPermissions?.length"
+						[pRowToggler]="permission"
+						[rounded]="true"
+						[text]="true"
+						[plain]="true"
+						size="small"
+						[icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+					/>
+				</div>
+			</td>
+			<td>{{ permission.name }}</td>
+			<td>{{ permission.category }}</td>
+			<td><p-check-box [binary]="true" [(ngModel)]="permission.allowView" /></td>
+			<td><p-check-box [binary]="true" [(ngModel)]="permission.allowCreate" /></td>
+			<td><p-check-box [binary]="true" [(ngModel)]="permission.allowUpdate" /></td>
+			<td><p-check-box [binary]="true" [(ngModel)]="permission.allowDelete" /></td>
+		</tr>
+	</ng-template>
+	<ng-template #rowexpansion let-permission>
+		<tr class="text-sm">
+			<td colspan="7">
+				<div class="p-4">
+					<p-table [value]="permission.extraPermissions" dataKey="id" [showGridlines]="false">
+						<ng-template #caption>
+							<div class="justify-items-center text-base"><div>Extra Permissions</div></div>
+						</ng-template>
+						<ng-template #header>
+							<tr>
+								<th>Description</th>
+								<th>Allowed</th>
+							</tr>
+						</ng-template>
+						<ng-template #body let-extraPermission>
+							<tr>
+								<td>{{ extraPermission.description }}</td>
+								<td><p-check-box [binary]="true" [(ngModel)]="extraPermission.allowed" /></td>
+							</tr>
+						</ng-template>
+						<ng-template #emptymessage>
+							<tr>
+								<td colspan="2" class="justify-items-center text-muted-color"><div>No data</div></td>
+							</tr>
+						</ng-template>
+					</p-table>
+				</div>
+			</td>
+		</tr>
+	</ng-template>
+	<ng-template #emptymessage>
+		<tr>
+			<td colspan="7" class="justify-items-center text-xl text-muted-color"><div>No data</div></td>
+		</tr>
+	</ng-template>
+</p-table>

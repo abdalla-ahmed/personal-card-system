@@ -1,0 +1,37 @@
+<p-dialog
+	#userPermissionsDialog
+	[modal]="true"
+	[(visible)]="visible"
+	[breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+	[style]="{ width: '900px', height: '600px' }"
+    styleClass="min-w-[350px] min-h-[200px]"
+    [focusTrap]="true"
+    [focusOnShow]="true"
+    position="center"
+>
+	<ng-template #header>
+		<div class="inline-flex items-center justify-center gap-2">
+			<span class="font-bold whitespace-nowrap">{{ "User Permissions: " + user().username }}</span>
+		</div>
+	</ng-template>
+	<ng-template #content>
+		<!-- <form #formRef="ngForm" [formGroup]="form"> -->
+		<p-tabs value="0">
+			<p-tablist>
+				<p-tab value="0">Permissions</p-tab>
+			</p-tablist>
+			<p-tabpanels>
+				<p-tabpanel value="0">
+					<app-permissions-grid [(dataSource)]="permissionsService.formData.permissions"></app-permissions-grid>
+				</p-tabpanel>
+			</p-tabpanels>
+		</p-tabs>
+		<!-- </form> -->
+	</ng-template>
+	<ng-template #footer>
+		<div class="inline-flex items-center justify-center gap-4 mt-4">
+			<p-button label="Cancel" (click)="permissionsService.hideUserPermissionsDialog()" outlined />
+			<p-button label="Save" (click)="permissionsService.save()" icon="pi pi-save" />
+		</div>
+	</ng-template>
+</p-dialog>

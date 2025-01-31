@@ -1,0 +1,46 @@
+<p-toolbar styleClass="mb-6">
+	<ng-template #start>
+		<div class="flex gap-4">
+			<p-button
+				severity="primary"
+				label="New"
+				[disabled]="isCreate || isUpdate"
+				icon="pi pi-plus"
+				[rounded]="true"
+				outlined
+				(onClick)="onCreateClicked()"
+			/>
+			<p-button severity="success" label="Save" [disabled]="isNone" icon="pi pi-save" [rounded]="true" outlined (onClick)="onSave()" />
+			<!-- 			<p-button
+				severity="info"
+				label="Edit"
+				[disabled]="isUpdate"
+				icon="pi pi-pen-to-square"
+				[rounded]="true"
+				outlined
+				(onClick)="onUpdateClicked()"
+			/> -->
+			<p-button
+				severity="danger"
+				label="Delete"
+				[disabled]="!isUpdate"
+				icon="pi pi-trash"
+				[rounded]="true"
+				outlined
+				(onClick)="onDeleteClicked()"
+			/>
+			<p-button
+				severity="secondary"
+				label="Calcel"
+				[disabled]="isNone"
+				icon="pi pi-times"
+				[rounded]="true"
+				outlined
+				(onClick)="onCancelClicked()"
+			/>
+		</div>
+	</ng-template>
+	<ng-template #end>
+		<!-- <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" /> -->
+	</ng-template>
+</p-toolbar>

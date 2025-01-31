@@ -1,0 +1,24 @@
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+x509_extensions = v3_req
+distinguished_name = dn
+
+
+[dn]
+C = BE
+ST = digem
+L = brussels
+O = EY
+OU = PAS
+emailAddress = mailer@domain.com
+CN = dev.local
+
+
+[v3_req]
+subjectAltName = @alt_names
+
+
+[alt_names]
+DNS.1 = dev.local        

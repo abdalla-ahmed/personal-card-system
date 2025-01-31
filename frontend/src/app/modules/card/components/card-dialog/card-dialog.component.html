@@ -1,0 +1,168 @@
+<p-dialog
+	#cardDialog
+	[modal]="true"
+	[(visible)]="visible"
+	[breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+	[style]="{ width: '700px', height: '550px' }"
+	styleClass="min-w-[350px] min-h-[200px]"
+	[focusTrap]="true"
+	[focusOnShow]="true"
+	position="center"
+>
+	<ng-template #header>
+		<div class="inline-flex items-center justify-center gap-2">
+			<span class="font-bold whitespace-nowrap">{{ cardService.isCreate ? "Create Card" : "Edit Card" }}</span>
+		</div>
+	</ng-template>
+	<ng-template #content>
+		<form #formRef="ngForm" [formGroup]="form">
+			<p-tabs value="0">
+				<p-tablist>
+					<p-tab value="0">Basic Information</p-tab>
+				</p-tablist>
+				<p-tabpanels>
+					<p-tabpanel value="0">
+						<div class="flex flex-col gap-4">
+							<div class="flex flex-row gap-4">
+								@if (form.controls["fullName"]; as ctrl) {
+									<div class="felx flex-col w-full">
+										<p-inputgroup>
+											<p-floatlabel variant="in">
+												<input pInputText pSize="small" id="fullName" type="text" formControlName="fullName" />
+												<label for="fullName">Full Name</label>
+											</p-floatlabel>
+										</p-inputgroup>
+										<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small"
+											>required.</p-message
+										>
+									</div>
+								}
+								@if (form.controls["position"]; as ctrl) {
+									<div class="felx flex-col w-full">
+										<p-inputgroup>
+											<p-floatlabel variant="in">
+												<input pInputText pSize="small" id="position" type="text" formControlName="position" />
+												<label for="position">Position</label>
+											</p-floatlabel>
+										</p-inputgroup>
+										<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small"
+											>required.</p-message
+										>
+									</div>
+								}
+							</div>
+							<div class="flex flex-row gap-4">
+								@if (form.controls["telephone"]; as ctrl) {
+									<div class="felx flex-col w-full">
+										<p-inputgroup>
+											<p-floatlabel variant="in">
+												<input pInputText pSize="small" id="telephone" type="text" formControlName="telephone" />
+												<label for="telephone">Telephone</label>
+											</p-floatlabel>
+										</p-inputgroup>
+										<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small"
+											>required.</p-message
+										>
+									</div>
+								}
+								@if (form.controls["mobile"]; as ctrl) {
+									<div class="felx flex-col w-full">
+										<p-inputgroup>
+											<p-floatlabel variant="in">
+												<input pInputText pSize="small" id="mobile" type="text" formControlName="mobile" />
+												<label for="mobile">Mobile</label>
+											</p-floatlabel>
+										</p-inputgroup>
+										<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small"
+											>required.</p-message
+										>
+									</div>
+								}
+							</div>
+							<div class="flex flex-row gap-4">
+								@if (form.controls["email"]; as ctrl) {
+									<div class="felx flex-col w-full">
+										<p-inputgroup>
+											<p-floatlabel variant="in">
+												<input pInputText pSize="small" id="email" type="text" formControlName="email" />
+												<label for="email">Email</label>
+											</p-floatlabel>
+										</p-inputgroup>
+										<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small"
+											>required.</p-message
+										>
+									</div>
+								}
+								@if (form.controls["address"]; as ctrl) {
+									<div class="felx flex-col w-full">
+										<p-inputgroup>
+											<p-floatlabel variant="in">
+												<input pInputText pSize="small" id="address" type="text" formControlName="address" />
+												<label for="address">Address</label>
+											</p-floatlabel>
+										</p-inputgroup>
+										<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small"
+											>required.</p-message
+										>
+									</div>
+								}
+							</div>
+							<div class="flex flex-row gap-4">
+								@if (form.controls["companyName"]; as ctrl) {
+									<div class="felx flex-col w-full">
+										<p-inputgroup>
+											<p-floatlabel variant="in">
+												<input pInputText pSize="small" id="companyName" type="text" formControlName="companyName" />
+												<label for="companyName">Company Name</label>
+											</p-floatlabel>
+										</p-inputgroup>
+										<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small"
+											>required.</p-message
+										>
+									</div>
+								}
+								@if (form.controls["companyAddress"]; as ctrl) {
+									<div class="felx flex-col w-full">
+										<p-inputgroup>
+											<p-floatlabel variant="in">
+												<input pInputText pSize="small" id="companyAddress" type="text" formControlName="companyAddress" />
+												<label for="companyAddress">Company Address</label>
+											</p-floatlabel>
+										</p-inputgroup>
+										<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small"
+											>required.</p-message
+										>
+									</div>
+								}
+							</div>
+							<div class="flex flex-row gap-4 justify-start items-start">
+								<div class="flex flex-col">
+									<p-message *ngIf="cardService.isUpdate" severity="secondary" variant="simple" size="small"
+										>Leave it empty if you don't want to change it.
+									</p-message>
+
+									<p-fileupload
+										mode="basic"
+										[chooseLabel]="cardService.isCreate ? 'Choose Logo' : 'Update Logo'"
+										chooseIcon="pi pi-upload"
+										multiple="false"
+										accept="image/*"
+										maxFileSize="2097152"
+										[auto]="false"
+										(onSelect)="cardService.onLogoFileSelected($event)"
+									/>
+								</div>
+							</div>
+						</div>
+					</p-tabpanel>
+				</p-tabpanels>
+			</p-tabs>
+		</form>
+	</ng-template>
+	<ng-template #footer>
+		<div class="inline-flex items-center justify-center gap-4 mt-4">
+			<p-button label="Cancel" (click)="cardService.hideCardDialog()" outlined />
+			<p-button label="Save" (click)="cardService.saveCard()" icon="pi pi-save" />
+		</div>
+	</ng-template>
+</p-dialog>

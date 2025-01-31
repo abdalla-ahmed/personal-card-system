@@ -1,0 +1,102 @@
+<p-dialog
+	#userDialog
+	[modal]="true"
+	[(visible)]="visible"
+	[breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+	[style]="{ width: '550px', height: '450px' }"
+    styleClass="min-w-[350px] min-h-[200px]"
+    [focusTrap]="true"
+    [focusOnShow]="true"
+    position="center"
+>
+	<ng-template #header>
+		<div class="inline-flex items-center justify-center gap-2">
+			<span class="font-bold whitespace-nowrap">{{ userService.isCreate ? "Create User" : "Edit User: " + user().username }}</span>
+		</div>
+	</ng-template>
+	<ng-template #content>
+		<form #formRef="ngForm" [formGroup]="form">
+			<p-tabs value="0">
+				<p-tablist>
+					<p-tab value="0">Basic Information</p-tab>
+					<p-tab value="1">Roles</p-tab>
+				</p-tablist>
+				<p-tabpanels>
+					<p-tabpanel value="0">
+						<div class="flex flex-col gap-6">
+							@if (form.controls["username"]; as ctrl) {
+								<div class="felx flex-row">
+									<p-inputgroup>
+										<p-floatlabel variant="in">
+											<input pInputText pSize="small" id="username" type="email" formControlName="username" />
+											<label for="username">Username</label>
+										</p-floatlabel>
+									</p-inputgroup>
+									<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small">required.</p-message>
+								</div>
+							}
+
+							@if (form.controls["email"]; as ctrl) {
+								<div class="felx flex-row">
+									<p-inputgroup>
+										<p-floatlabel variant="in">
+											<input pInputText pSize="small" id="email" type="email" formControlName="email" />
+											<label for="email">Email</label>
+										</p-floatlabel>
+									</p-inputgroup>
+									<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small">required.</p-message>
+								</div>
+							}
+
+							@if (form.controls["password"]; as ctrl) {
+								<div class="felx flex-row w-full">
+									<p-message *ngIf="userService.isUpdate" severity="secondary" variant="simple" size="small"
+										>Leave it empty if you don't want to change it.
+									</p-message>
+									<p-floatlabel variant="in">
+										<p-password
+											size="small"
+											[fluid]="true"
+											inputId="password"
+											[toggleMask]="true"
+											[feedback]="false"
+											formControlName="password"
+										/>
+										<label for="password">{{ userService.isCreate ? "New Password" : "Change Password" }}</label>
+									</p-floatlabel>
+									@if (userService.isCreate) {
+										<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small"
+											>required.</p-message
+										>
+									}
+								</div>
+							}
+						</div>
+					</p-tabpanel>
+					<p-tabpanel value="1">
+						<div class="flex flex-col gap-6">
+							@if (form.controls["roles"]; as ctrl) {
+								<div class="felx flex-row">
+									<p-selectbutton
+										formControlName="roles"
+										[options]="roles()"
+										optionLabel="name"
+										optionValue="id"
+										[multiple]="true"
+									/>
+									<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small">required.</p-message>
+								</div>
+							}
+						</div>
+					</p-tabpanel>
+				</p-tabpanels>
+			</p-tabs>
+		</form>
+	</ng-template>
+	<ng-template #footer>
+		<div class="inline-flex items-center justify-center gap-4 mt-4">
+			<p-button label="Cancel" (click)="userService.hideUserDialog()" outlined />
+			<p-button label="Save" (click)="userService.saveUser()" icon="pi pi-save" />
+		</div>
+	</ng-template>
+</p-dialog>

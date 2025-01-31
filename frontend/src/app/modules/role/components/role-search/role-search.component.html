@@ -1,0 +1,100 @@
+<p-card>
+	<ng-template #title>{{ currentRoute.title | async }}</ng-template>
+	<ng-template #subtitle>Manage roles and its permissions</ng-template>
+	<ng-template #content>
+		<div class="felx space-y-4 mt-4 rtl">
+			<div class="felx flex-col">
+				<p-table
+					#rolesDataGrid
+					[value]="roles()"
+					dataKey="id"
+					[rows]="10"
+					[paginator]="true"
+					[showGridlines]="true"
+					[selectionMode]="null"
+					[tableStyle]="{ 'min-width': '100px' }"
+					[rowHover]="true"
+					currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records"
+					[showCurrentPageReport]="true"
+					[rowsPerPageOptions]="[5, 10, 25, 50, 100]"
+					[selectionPageOnly]="true"
+					[metaKeySelection]="true"
+					[scrollable]="true"
+					scrollHeight="300px"
+					[resizableColumns]="true"
+					columnResizeMode="fit"
+					[globalFilterFields]="['name']"
+				>
+					<ng-template #caption>
+						<div class="flex flex-row place-content-between gap-4">
+							<div class="flex flex-col">
+								<p-iconfield iconPosition="left">
+									<p-inputicon>
+										<i class="pi pi-search"></i>
+									</p-inputicon>
+									<input
+										pInputText
+										type="text"
+										(input)="rolesDataGrid.filterGlobal($any($event.target).value, 'contains')"
+										placeholder="Search..."
+									/>
+								</p-iconfield>
+							</div>
+							<div class="flex flex-col">
+								<p-button label="Create new role" (click)="roleService.showCreateRoleDialog()" severity="primary" icon="pi pi-plus" />
+							</div>
+						</div>
+					</ng-template>
+					<ng-template #header>
+						<tr>
+							<th pResizableColumn pSortableColumn="name">
+								Name
+								<p-sortIcon field="name" />
+							</th>
+							<th pFrozenColumn pResizableColumn width="15%">Actions</th>
+						</tr>
+					</ng-template>
+					<ng-template #body let-role let-rowIndex="rowIndex">
+						<tr class="!cursor-auto" [pSelectableRow]="role" [pSelectableRowIndex]="rowIndex">
+							<td>
+								<div class="flex flex-nowrap space-x-2">
+									<div>{{ role.name }}</div>
+									<div *ngIf="role.static === true" class="cursor-default">
+										<p-tag
+											value="Static"
+											severity="contrast"
+											class="opacity-60 size-10/12 text-xs"
+											pTooltip="Static roles are system generated and cannot be deleted"
+											tooltipPosition="top"
+											showDelay="200"
+										/>
+									</div>
+								</div>
+							</td>
+							<td>
+								<p-button
+									label="Actions"
+									(click)="onActionsBtnClick($event, role)"
+									severity="primary"
+									size="small"
+									icon="pi pi-ellipsis-v"
+									outlined
+								/>
+							</td>
+						</tr>
+					</ng-template>
+					<ng-template #emptymessage>
+						<tr>
+							<td colspan="4" class="justify-items-center text-xl text-muted-color"><div>No data</div></td>
+						</tr>
+					</ng-template>
+				</p-table>
+			</div>
+		</div>
+	</ng-template>
+</p-card>
+
+<app-role-dialog [(visible)]="roleService.roleDialogVisible" [role]="selectedRole"></app-role-dialog>
+
+<p-menu #rowMenu [model]="rowActions" [popup]="true" />
+<p-confirm-dialog [style]="{ width: '500px' }" />

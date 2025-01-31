@@ -1,0 +1,96 @@
+<p-card>
+	<ng-template #title>{{ currentRoute.title | async }}</ng-template>
+	<ng-template #subtitle>Manage users and permissions</ng-template>
+	<ng-template #content>
+		<div class="felx space-y-4 mt-4 rtl">
+			<div class="felx flex-col">
+				<p-table
+					#usersDataGrid
+					[value]="users()"
+					dataKey="id"
+					[rows]="10"
+					[paginator]="true"
+					[showGridlines]="true"
+					[selectionMode]="null"
+					[tableStyle]="{ 'min-width': '100px' }"
+					[rowHover]="true"
+					currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records"
+					[showCurrentPageReport]="true"
+					[rowsPerPageOptions]="[5, 10, 25, 50, 100]"
+					[selectionPageOnly]="true"
+					[metaKeySelection]="true"
+					[scrollable]="true"
+					scrollHeight="300px"
+					[resizableColumns]="true"
+					columnResizeMode="fit"
+					[globalFilterFields]="['username', 'email']"
+				>
+					<ng-template #caption>
+						<div class="flex flex-row place-content-between gap-4">
+							<div class="flex flex-col">
+								<p-iconfield iconPosition="left">
+									<p-inputicon>
+										<i class="pi pi-search"></i>
+									</p-inputicon>
+									<input
+										pInputText
+										type="text"
+										(input)="usersDataGrid.filterGlobal($any($event.target).value, 'contains')"
+										placeholder="Search..."
+									/>
+								</p-iconfield>
+							</div>
+							<div class="flex flex-col">
+								<p-button label="Create new user" (click)="userService.showCreateUserDialog()" severity="primary" icon="pi pi-plus" />
+							</div>
+						</div>
+					</ng-template>
+					<ng-template #header>
+						<tr>
+							<th pResizableColumn pSortableColumn="username">
+								Username
+								<p-sortIcon field="username" />
+							</th>
+							<th pResizableColumn pSortableColumn="email">
+								Email Address
+								<p-sortIcon field="email" />
+							</th>
+							<th pResizableColumn pSortableColumn="roles">Roles</th>
+							<th pFrozenColumn width="15%">Actions</th>
+						</tr>
+					</ng-template>
+					<ng-template #body let-user let-rowIndex="rowIndex">
+						<tr class="!cursor-auto" [pSelectableRow]="user" [pSelectableRowIndex]="rowIndex">
+							<td>{{ user.username }}</td>
+							<td>{{ user.email }}</td>
+							<td class="space-x-2">
+								<p-tag *ngFor="let role of user.roles" [value]="role.name" [severity]="getRoleTagSeverity(role.id)" />
+							</td>
+							<td>
+								<p-button
+									label="Actions"
+									(click)="onActionsBtnClick($event, user)"
+									severity="primary"
+									size="small"
+									icon="pi pi-ellipsis-v"
+									outlined
+								/>
+							</td>
+						</tr>
+					</ng-template>
+					<ng-template #emptymessage>
+						<tr>
+							<td colspan="4" class="justify-items-center text-xl text-muted-color"><div>No data</div></td>
+						</tr>
+					</ng-template>
+				</p-table>
+			</div>
+		</div>
+	</ng-template>
+</p-card>
+
+<app-user-dialog [(visible)]="userService.userDialogVisible" [user]="selectedUser" [roles]="roles"></app-user-dialog>
+<app-user-permissions-dialog [(visible)]="permissionsService.userPermissionsDialogVisible" [user]="selectedUser"></app-user-permissions-dialog>
+
+<p-menu #rowMenu [model]="rowActions" [popup]="true" />
+<p-confirm-dialog [style]="{ width: '500px' }" />

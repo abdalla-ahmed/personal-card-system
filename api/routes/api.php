@@ -1,0 +1,54 @@
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CardController;
+use App\Http\Controllers\LogController;
+use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\QRCodeController;
+use App\Http\Controllers\RoleController;
+use Illuminate\Support\Facades\Route;
+
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::get('/qr-code', [QRCodeController::class, 'generateQrCode']);
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/refresh-token', [AuthController::class, 'refreshToken']);
+
+    Route::get('/modules', [ModuleController::class, 'index']);
+
+    Route::middleware(['module:1'])->group(function () {
+        Route::get('/logs', [LogController::class, 'index'])->middleware('mp:view');
+        Route::get('/logs/{id}', [LogController::class, 'show'])->middleware('mp:view');
+    });
+
+    Route::middleware(['module:2'])->group(function () {
+        Route::get('/roles', [RoleController::class, 'index'])->middleware(['mp:view']);
+        Route::get('/roles/{role}', [RoleController::class, 'show'])->middleware(['mp:view']);
+        Route::post('/roles', [RoleController::class, 'store'])->middleware('mp:create');
+        Route::put('/roles/{role}', [RoleController::class, 'update'])->middleware('mp:update');
+        Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->middleware(['mp:delete']);
+    });
+
+    Route::middleware(['module:3'])->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->middleware('mp:view');
+        Route::get('/users/{user}', [UserController::class, 'show'])->middleware('mp:view');
+        Route::post('/users', [UserController::class, 'store'])->middleware('mp:create');
+        Route::put('/users/{user}', [UserController::class, 'update'])->middleware('mp:update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->middleware(['mp:delete']);
+        Route::get('/users/{user}/permissions', [UserController::class, 'permissions'])->middleware('xp:1');
+        Route::put('/users/{user}/permissions', [UserController::class, 'updatePermissions'])->middleware('xp:1');
+    });
+
+    Route::middleware(['module:4'])->group(function () {
+        Route::get('/cards', [CardController::class, 'index'])->middleware(['mp:view']);
+        Route::get('/cards/{card}', [CardController::class, 'show'])->middleware(['mp:view']);
+        Route::post('/cards', [CardController::class, 'store'])->middleware('mp:create');
+        Route::post('/cards/{card}', [CardController::class, 'update'])->middleware('mp:update'); // Yes POST not PUT (not a mistake)
+        Route::delete('/cards/{card}', [CardController::class, 'destroy'])->middleware(['mp:delete']);
+    });
+});

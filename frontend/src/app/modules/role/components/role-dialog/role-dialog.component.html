@@ -1,0 +1,55 @@
+<p-dialog
+	#roleDialog
+	[modal]="true"
+	[(visible)]="visible"
+	[breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+	[style]="{ width: '900px', height: '600px' }"
+    styleClass="min-w-[350px] min-h-[200px]"
+    [focusTrap]="true"
+    [focusOnShow]="true"
+    position="center"
+>
+	<ng-template #header>
+		<div class="inline-flex items-center justify-center gap-2">
+			<span class="font-bold whitespace-nowrap">{{ roleService.isCreate ? "Create Role" : "Edit Role: " + role().name }}</span>
+		</div>
+	</ng-template>
+	<ng-template #content>
+		<form #formRef="ngForm" [formGroup]="form">
+			<p-tabs value="0">
+				<p-tablist>
+					<p-tab value="0">Basic Information</p-tab>
+					<p-tab value="1">Permissions</p-tab>
+				</p-tablist>
+				<p-tabpanels>
+					<p-tabpanel value="0">
+						<div class="flex flex-col gap-6 ">
+							@if (form.controls["name"]; as ctrl) {
+								<div class="felx flex-row">
+									<p-inputgroup>
+										<p-floatlabel variant="in">
+											<input pInputText pSize="small" id="name" type="text" formControlName="name" />
+											<label for="name">Name</label>
+										</p-floatlabel>
+									</p-inputgroup>
+									<p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small">required.</p-message>
+								</div>
+							}
+						</div>
+					</p-tabpanel>
+					<p-tabpanel value="1">
+						<div class="flex flex-col gap-6">
+                            <app-permissions-grid [(dataSource)]="roleService.formData.permissions"></app-permissions-grid>
+						</div>
+					</p-tabpanel>
+				</p-tabpanels>
+			</p-tabs>
+		</form>
+	</ng-template>
+	<ng-template #footer>
+		<div class="inline-flex items-center justify-center gap-4 mt-4">
+			<p-button label="Cancel" (click)="roleService.hideRoleDialog()" outlined />
+			<p-button label="Save" (click)="roleService.saveRole()" icon="pi pi-save" />
+		</div>
+	</ng-template>
+</p-dialog>
