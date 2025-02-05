@@ -40,7 +40,7 @@ import { AppFloatingConfigurator } from '../../layout/core/app-floating-configur
                         <span class="text-primary font-bold text-5xl mb-4">404</span>
                         <h1 class="text-surface-900 dark:text-surface-0 font-bold text-3xl lg:text-5xl mb-2">Not Found</h1>
                         <div class="text-surface-600 dark:text-surface-200 mb-8">The requested resource is not available.</div>
-                        <div class="mt-8"><p-button label="Go to Dashboard" routerLink="/" /></div>
+                        <div class="mt-8"><p-button label="Go to Main" routerLink="/" /></div>
                     </div>
                 </div>
             </div>

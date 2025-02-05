@@ -24,17 +24,17 @@ export class AppMenu implements OnInit, OnDestroy {
                 moduleId: null,
                 label: 'Main',
                 items: [
-                    { moduleId: null, label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] },
-                    { moduleId: 4, label: 'Cards', icon: 'pi pi-fw pi-id-card', routerLink: ['/cards'] },
+                    { moduleId: null, label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/internal/dashboard'] },
+                    { moduleId: 4, label: 'Cards', icon: 'pi pi-fw pi-id-card', routerLink: ['/internal/cards'] },
                 ]
             },
             {
                 moduleId: null,
                 label: 'Administration',
                 items: [
-                    { moduleId: 3, label: 'Users', icon: 'pi pi-fw pi-users', routerLink: ['/users'] },
-                    { moduleId: 2, label: 'Roles', icon: 'pi pi-fw pi-list-check', routerLink: ['/roles'] },
-                    { moduleId: 1, label: 'Logs', icon: 'pi pi-fw pi-book', routerLink: ['/logs'] },
+                    { moduleId: 3, label: 'Users', icon: 'pi pi-fw pi-users', routerLink: ['/internal/users'] },
+                    { moduleId: 2, label: 'Roles', icon: 'pi pi-fw pi-list-check', routerLink: ['/internal/roles'] },
+                    { moduleId: 1, label: 'Activity Log', icon: 'pi pi-fw pi-book', routerLink: ['/internal/activity-log'] },
                 ]
             },
         ];

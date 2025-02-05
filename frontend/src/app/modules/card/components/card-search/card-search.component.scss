@@ -1,24 +1,10 @@
-.business-card {
-	background: var(--surface-card);
-	padding: 0rem;
-	margin-bottom: 10px;
-	border-radius: 10px;
-	&:last-child {
-		margin-bottom: 0;
-	}
-}
-
-.business-card .card-logo {
-	padding: 5px;
-	width: 100px;
-}
-
-.business-card .card-icon {
-	font-size: 12px;
-}
-
 :host p-dataview ::ng-deep .p-dataview-content {
-	background: none !important;
+    background: none !important;
     background-color: transparent !important;
 }
 
+app-personal-card {
+    &:last-child {
+        margin-bottom: 15px;
+    }
+}

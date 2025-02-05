@@ -22,14 +22,14 @@ class MainSeeder extends Seeder
     ];
 
     private $modules = [
-        ['id' => 1, 'name' => 'Logs', 'category' => 'Administration'],
+        ['id' => 1, 'name' => 'Activity Logs', 'category' => 'Administration'],
         ['id' => 2, 'name' => 'Roles', 'category' => 'Administration'],
         ['id' => 3, 'name' => 'Users', 'category' => 'Administration'],
         ['id' => 4, 'name' => 'Cards', 'category' => 'Main'],
     ];
 
     private $modulePermissions = [
-        ['id' => 1, 'module_id' => 3, 'description' => 'Can view and update user permissions'],
+        ['id' => 1, 'module_id' => 3, 'description' => 'View and update user permissions'],
     ];
 
 

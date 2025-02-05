@@ -7,7 +7,8 @@ import { LayoutService } from '../../../core/services/layout.service';
 @Component({
     selector: 'app-floating-configurator',
     imports: [ButtonModule, StyleClassModule, AppConfigurator],
-    templateUrl: './app-floating-configurator.component.html'
+    standalone: true,
+    templateUrl: './app-floating-configurator.component.html',
 })
 export class AppFloatingConfigurator {
     LayoutService = inject(LayoutService);
@@ -15,6 +16,9 @@ export class AppFloatingConfigurator {
     isDarkTheme = computed(() => this.LayoutService.layoutConfig().darkTheme);
 
     toggleDarkMode() {
-        this.LayoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+        this.LayoutService.layoutConfig.update((state) => ({
+            ...state,
+            darkTheme: !state.darkTheme,
+        }));
     }
 }

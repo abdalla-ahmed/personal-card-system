@@ -9,7 +9,8 @@ import { RoleForListDto } from '../../../../shared/http-clients/role-client.serv
     templateUrl: './user-dialog.component.html',
     styleUrls: ['./user-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [AppSharedModule]
+    standalone: true,
+    imports: [AppSharedModule],
 })
 export class UserDialogComponent implements OnInit {
     visible = model.required<boolean>();
@@ -18,11 +19,11 @@ export class UserDialogComponent implements OnInit {
 
     readonly userService = inject(UserService);
 
-    constructor() { }
+    constructor() {}
 
-    ngOnInit() {
+    ngOnInit() {}
+
+    get form() {
+        return this.userService.form;
     }
-
-    get form() { return this.userService.form; }
-
 }

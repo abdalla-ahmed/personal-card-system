@@ -83,6 +83,7 @@ import { InputIcon } from 'primeng/inputicon';
 import { CardModule } from 'primeng/card';
 import { TabsModule } from 'primeng/tabs';
 import { FocusTrapModule } from 'primeng/focustrap';
+import {TextareaModule} from "primeng/textarea";
 
 const SHARED_MODULES = [
     CommonModule,
@@ -118,7 +119,6 @@ const SHARED_MODULES = [
     ToggleButtonModule,
     SliderModule,
     RadioButtonModule,
-    InputTextModule,
     RatingModule,
     ChipModule,
     KnobModule,
@@ -178,7 +178,8 @@ const SHARED_MODULES = [
     AvatarModule,
     CardModule,
     TabsModule,
-    FocusTrapModule
+    FocusTrapModule,
+    TextareaModule
 ];
 
 const SHARED_COMPONENTS = [

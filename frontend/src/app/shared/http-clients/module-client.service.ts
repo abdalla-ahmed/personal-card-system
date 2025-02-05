@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClientBase } from '../../shared/http-clients/http-client-base';
+import { HttpClientBase } from './http-client-base';
 
 export class ModulePermissionDto {
     id?: number;

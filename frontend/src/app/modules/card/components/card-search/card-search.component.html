@@ -2,8 +2,8 @@
 	<ng-template #title>{{ currentRoute.title | async }}</ng-template>
 	<ng-template #subtitle>Manage cards</ng-template>
 	<ng-template #content>
-		<div class="felx space-y-4 mt-4 rtl">
-			<div class="felx flex-col">
+		<div class="flex space-y-4 mt-4 rtl">
+			<div class="flex flex-col">
 				<div class="flex flex-col">
 					<p-button label="Add new card" (click)="cardService.showCreateCardDialog()" severity="primary" icon="pi pi-plus" />
 				</div>
@@ -12,63 +12,16 @@
 	</ng-template>
 </p-card>
 
-<p-dataview [value]="cards()" layout="grid" [rows]="20" [paginator]="true" emptyMessage="No data" styleClass="mt-4">
+<p-dataview [value]="cards()" layout="grid" [rows]="20" [paginator]="true" styleClass="mt-4">
 	<ng-template #grid let-items>
-		<div class="grid grid-cols-3 gap-2">
+		<div class="grid grid-cols-3 gap-4">
 			@for (card of items; track $index) {
-				<div class="flex business-card w-[370px] h-[200px] shadow-lg overflow-hidden">
-					<div class="w-[30%] grid grid-cols-1 justify-center p-2 mt-4">
-						<div class="flex flex-col justify-center items-center overflow-hidden">
-							<div class="flex flex-row">
-								<img class="card-logo" [src]="logoImageUrl(card)" alt="Logo" />
-							</div>
-							<div class="flex flex-row text-2xl text-surface-500 dark:text-surface-200 font-semibold mt-2">
-								{{ card.companyName }}
-							</div>
-						</div>
-						<div class="flex flex-row overflow-hidden">
-							<div class="text-xs text-surface-500 dark:text-surface-200">
-								{{ card.companyAddress }}
-							</div>
-						</div>
-					</div>
-					<div class="w-[70%] flex flex-col pb-3 mt-1">
-						<div class="flex flex-row overflow-hidden justify-end items-end">
-							<p-button (click)="onActionsBtnClick($event, card)" severity="secondary" size="small" icon="pi pi-ellipsis-v" text />
-						</div>
-						<div class="flex flex-row font-semibold text-xl overflow-hidden">{{ card.fullName }}</div>
-						<div class="flex flex-row text-surface-500 dark:text-surface-200 text-sm overflow-hidden">
-							{{ card.position }}
-						</div>
-						<div class="grid grid-cols-2 text-surface-500 dark:text-surface-200 overflow-hidden">
-							<div class="flex flex-col gap-1 mt-[50px] text-xs font-semibold">
-								<div class="flex flex-row items-center">
-									<i class="pi pi-mobile mr-2 card-icon"></i>
-									{{ card.mobile }}
-								</div>
-								<div class="flex flex-row items-center">
-									<i class="pi pi-phone mr-2 card-icon"></i>
-									{{ card.telephone }}
-								</div>
-								<div class="flex flex-row items-center">
-									<i class="pi pi-envelope mr-2 card-icon"></i>
-									{{ card.email }}
-								</div>
-								<div class="flex flex-row items-center">
-									<i class="pi pi-map-marker mr-2 card-icon"></i>
-									{{ card.address }}
-								</div>
-							</div>
-							<div class="flex flex-col mr-4">
-								<img
-									class="w-[80px] justify-self-start self-end rounded-lg border-4 border-gray-400 border-opacity-20"
-									[src]="qrCodeImageUrl(card)"
-									alt="QRCode"
-								/>
-							</div>
-						</div>
-					</div>
-				</div>
+                <app-personal-card
+                    [model]="card"
+                    [menu]="rowMenu"
+                    (onActionClick)="onActionsBtnClick($event)"
+                >
+                </app-personal-card>
 			}
 		</div>
 	</ng-template>

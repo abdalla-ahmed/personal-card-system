@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\ActivityAction;
+use App\Constants\ModuleID;
 use App\Http\Requests\Role\CreateRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Models\Role;
@@ -9,13 +11,16 @@ use App\Models\RoleModule;
 use App\Models\RoleModulePermission;
 use App\Models\UserRole;
 use App\Services\RoleService;
+use App\Services\Activity;
 use Illuminate\Http\Request;
 
 class RoleController extends ApiController
 {
     public function __construct(
         private readonly RoleService $roleService
-    ) {}
+    )
+    {
+    }
 
     public function index()
     {
@@ -62,6 +67,7 @@ class RoleController extends ApiController
         // create role module extra permissions
         RoleModulePermission::insert($roleModulePermissions);
 
+        Activity::Log(ModuleID::Roles, ActivityAction::CREATE, $role);
         return $this->resNoContent();
     }
 
@@ -111,6 +117,7 @@ class RoleController extends ApiController
         RoleModulePermission::where('role_id', $role->id)->delete();
         RoleModulePermission::insert($roleModulePermissions);
 
+        Activity::Log(ModuleID::Roles, ActivityAction::UPDATE, $role);
         return $this->resNoContent();
     }
 
@@ -128,6 +135,7 @@ class RoleController extends ApiController
             return $this->resError('Failed to delete role');
         }
 
+        Activity::Log(ModuleID::Roles, ActivityAction::DELETE, $role);
         return $this->resNoContent();
     }
 }

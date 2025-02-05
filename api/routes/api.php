@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/qr-code', [QRCodeController::class, 'generateQrCode']);
+Route::get('/public/cards/{card}', [CardController::class, 'showPublic']);
+
+Route::get('/audit', function () {
+    return \OwenIt\Auditing\Models\Audit::query()->get();
+});
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -22,8 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/modules', [ModuleController::class, 'index']);
 
     Route::middleware(['module:1'])->group(function () {
-        Route::get('/logs', [LogController::class, 'index'])->middleware('mp:view');
-        Route::get('/logs/{id}', [LogController::class, 'show'])->middleware('mp:view');
+        Route::get('/activity-logs', [LogController::class, 'index'])->middleware('mp:view');
+        Route::get('/activity-logs/{id}', [LogController::class, 'show'])->middleware('mp:view');
+        Route::delete('/activity-logs', [LogController::class, 'destroy'])->middleware('mp:delete');
     });
 
     Route::middleware(['module:2'])->group(function () {
@@ -46,7 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware(['module:4'])->group(function () {
         Route::get('/cards', [CardController::class, 'index'])->middleware(['mp:view']);
-        Route::get('/cards/{card}', [CardController::class, 'show'])->middleware(['mp:view']);
+        //Route::get('/cards/{card}', [CardController::class, 'show'])->middleware(['mp:view']);
         Route::post('/cards', [CardController::class, 'store'])->middleware('mp:create');
         Route::post('/cards/{card}', [CardController::class, 'update'])->middleware('mp:update'); // Yes POST not PUT (not a mistake)
         Route::delete('/cards/{card}', [CardController::class, 'destroy'])->middleware(['mp:delete']);

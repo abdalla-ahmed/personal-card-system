@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\ActivityAction;
+use App\Constants\ModuleID;
 use App\Http\Requests\Card\CreateCardRequest;
 use App\Http\Requests\Card\UpdateCardRequest;
 use App\Models\Card;
+use App\Services\Activity;
 use Illuminate\Http\Request;
 
 class CardController extends ApiController
@@ -35,25 +38,48 @@ class CardController extends ApiController
         $data = json_decode($request['jsonData']);
 
         $cardData = [
-            'full_name' =>  $data->fullName,
-            'position' =>  $data->position,
-            'telephone' =>  $data->telephone,
-            'mobile' =>  $data->mobile,
-            'email' =>  $data->email,
-            'address' =>  $data->address,
-            'company_name' =>  $data->companyName,
-            'company_address' =>  $data->companyAddress,
-            'logo_file_name' =>  $fileName,
+            'full_name' => $data->fullName,
+            'position' => $data->position,
+            'telephone' => $data->telephone,
+            'mobile' => $data->mobile,
+            'email' => $data->email,
+            'address' => $data->address,
+            'company_name' => $data->companyName,
+            'company_address' => $data->companyAddress,
+            'logo_file_name' => $fileName,
         ];
 
         $card = $request->user()->cards()->create($cardData);
+        if (is_null($card)) {
+            return $this->resError('Failed to create card');
+        }
 
+        Activity::Log(ModuleID::Cards, ActivityAction::CREATE, $card);
         return $this->resNoContent();
     }
 
     public function show(Card $card)
     {
-        $mappedCard =  $this->mapCard($card);
+        $mappedCard = $this->mapCard($card);
+        return $this->resSuccess($mappedCard);
+    }
+
+    public function showPublic(Request $request)
+    {
+        $cardId = $request->route('card');
+        if (!isset($cardId)) {
+            return $this->resUnexpected();
+        }
+
+        $card = Card::find($cardId);
+        if (is_null($card)) {
+            return $this->resNotFound();
+        }
+        if (!$card->active) {
+            return $this->resError('Card is not active');
+        }
+
+        $mappedCard = $this->mapCard($card);
         return $this->resSuccess($mappedCard);
     }
 
@@ -71,14 +97,14 @@ class CardController extends ApiController
         $data = json_decode($request['jsonData']);
 
         $cardData = [
-            'full_name' =>  $data->fullName,
-            'position' =>  $data->position,
-            'telephone' =>  $data->telephone,
-            'mobile' =>  $data->mobile,
-            'email' =>  $data->email,
-            'address' =>  $data->address,
-            'company_name' =>  $data->companyName,
-            'company_address' =>  $data->companyAddress,
+            'full_name' => $data->fullName,
+            'position' => $data->position,
+            'telephone' => $data->telephone,
+            'mobile' => $data->mobile,
+            'email' => $data->email,
+            'address' => $data->address,
+            'company_name' => $data->companyName,
+            'company_address' => $data->companyAddress,
         ];
 
         if (!is_null($fileName)) {
@@ -87,19 +113,24 @@ class CardController extends ApiController
 
         $card->update($cardData);
 
+        Activity::Log(ModuleID::Cards, ActivityAction::UPDATE, $card);
         return $this->resNoContent();
     }
 
     public function destroy(Card $card)
     {
-        $card->delete();
+        if (!$card->delete()) {
+            return $this->resError('Failed to delete card');
+        }
+
+        Activity::Log(ModuleID::Cards, ActivityAction::DELETE, $card);
         return $this->resNoContent();
     }
 
     private function mapCard(Card $card)
     {
         return [
-            'id' =>  $card->id,
+            'id' => $card->id,
             'fullName' => $card->full_name,
             'position' => $card->position,
             'telephone' => $card->telephone,
@@ -109,7 +140,7 @@ class CardController extends ApiController
             'companyName' => $card->company_name,
             'companyAddress' => $card->company_address,
             'active' => $card->active,
-            'logoImageUrl' =>  $card->logo_file_name,
+            'logoImageUrl' => $card->logo_file_name,
         ];
     }
 }

@@ -1,0 +1,28 @@
+<app-floating-configurator/>
+@if (!notAvailable()) {
+    <div class="flex items-center justify-center min-h-screen overflow-hidden">
+        <div class="flex flex-col items-center justify-center gap-6">
+            <div class="flex flex-row">
+                <app-personal-card
+                    #cardRef
+                    id="printable-section"
+                    [model]="card()"
+                >
+                </app-personal-card>
+            </div>
+            <div class="flex flex-row gap-6">
+                <div class="flex flex-col">
+                    <p-button label="Print" (click)="onPrintClick()" severity="primary" icon="pi pi-print"/>
+                </div>
+<!--                 <div class="flex flex-col">
+                    <p-button label="Export" (click)="onExportClick()" severity="secondary" icon="pi pi-file-pdf"/>
+                </div> -->
+            </div>
+        </div>
+    </div>
+} @else {
+    <app-card-not-available></app-card-not-available>
+}
+
+
+<p-menu #menu [model]="menuItems" [popup]="true"/>

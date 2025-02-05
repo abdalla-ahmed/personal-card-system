@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\ActivityAction;
+use App\Constants\ModuleID;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\Role;
@@ -9,6 +11,7 @@ use App\Models\User;
 use App\Models\UserModule;
 use App\Models\UserModulePermission;
 use App\Models\UserRole;
+use App\Services\Activity;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 
@@ -16,7 +19,9 @@ class UserController extends ApiController
 {
     public function __construct(
         private readonly UserService $userService
-    ) {}
+    )
+    {
+    }
 
     public function index()
     {
@@ -60,7 +65,11 @@ class UserController extends ApiController
         }
 
         $user = $this->userService->createUser($data);
+        if (is_null($user)) {
+            return $this->resError('Failed to create user');
+        }
 
+        Activity::Log(ModuleID::Users, ActivityAction::CREATE, $user);
         return $this->resNoContent();
     }
 
@@ -112,6 +121,7 @@ class UserController extends ApiController
         UserRole::where('user_id', $user->id)->delete();
         UserRole::insert($userRoles->toArray());
 
+        Activity::Log(ModuleID::Users, ActivityAction::UPDATE, $user);
         return $this->resNoContent();
     }
 
@@ -125,6 +135,7 @@ class UserController extends ApiController
             return $this->resError('Failed to delete user');
         }
 
+        Activity::Log(ModuleID::Users, ActivityAction::DELETE, $user);
         return $this->resNoContent();
     }
 
@@ -174,6 +185,7 @@ class UserController extends ApiController
         UserModulePermission::where('user_id', $user->id)->delete();
         UserModulePermission::insert($userModulePermissions);
 
+        Activity::Log(ModuleID::Users, ActivityAction::PERMISSIONS_UPDATE, $user);
         return $this->resNoContent();
     }
 

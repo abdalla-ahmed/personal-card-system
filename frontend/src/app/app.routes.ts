@@ -8,36 +8,54 @@ import { AuthGuard } from './core/guards/auth.guard';
 export const appRoutes: Routes = [
     {
         path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
+        redirectTo: 'internal',
+        pathMatch: 'full',
     },
     {
         path: 'auth',
-        title: 'Auth',
         resolve: [RouteResolver],
         canActivate: [AuthGuard],
-        loadChildren: () => import('./modules/auth/routes').then((m) => m.routes),
+        loadChildren: () =>
+            import('./modules/auth/routes').then((m) => m.routes),
     },
     {
-        path: '',
+        path: 'public',
+        resolve: [RouteResolver],
+        loadChildren: () => import('./public/routes').then((m) => m.routes),
+    },
+    {
+        path: 'internal',
         resolve: [RouteResolver],
         canActivate: [AuthGuard],
         component: AppLayout,
         children: [
+            {
+                path: '',
+                redirectTo: 'dashboard',
+                pathMatch: 'full',
+            },
             { path: 'dashboard', component: Dashboard },
             {
                 path: 'cards',
-                loadChildren: () => import('./modules/card/routes').then((m) => m.routes),
+                loadChildren: () =>
+                    import('./modules/card/routes').then((m) => m.routes),
             },
             {
                 path: 'roles',
-                loadChildren: () => import('./modules/role/routes').then((m) => m.routes),
+                loadChildren: () =>
+                    import('./modules/role/routes').then((m) => m.routes),
             },
             {
                 path: 'users',
-                loadChildren: () => import('./modules/user/routes').then((m) => m.routes),
+                loadChildren: () =>
+                    import('./modules/user/routes').then((m) => m.routes),
             },
-        ]
+            {
+                path: 'activity-log',
+                loadChildren: () =>
+                    import('./modules/log/routes').then((m) => m.routes),
+            },
+        ],
     },
-    { path: '**', component: Notfound }
+    { path: '**', component: Notfound },
 ];

@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { SharedConstants } from '../../core/common/constants';
 
 export const IS_FILE_UPLOAD = new HttpContextToken<boolean>(() => false);
+export const SKIP_ERROR_HANDLING = new HttpContextToken<boolean>(() => false);
 
 export abstract class HttpClientBase {
     protected readonly http = inject(HttpClient);

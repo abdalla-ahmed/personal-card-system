@@ -10,7 +10,8 @@ import { FileSelectEvent } from 'primeng/fileupload';
     templateUrl: './card-dialog.component.html',
     styleUrls: ['./card-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [AppSharedModule]
+    standalone: true,
+    imports: [AppSharedModule],
 })
 export class CardDialogComponent implements OnInit {
     visible = model.required<boolean>();
@@ -19,9 +20,11 @@ export class CardDialogComponent implements OnInit {
     readonly cardService = inject(CardService);
     readonly primeng = inject(PrimeNG);
 
-    constructor() { }
+    constructor() {}
 
-    ngOnInit() { }
+    ngOnInit() {}
 
-    get form() { return this.cardService.form; }
+    get form() {
+        return this.cardService.form;
+    }
 }

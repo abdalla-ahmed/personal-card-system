@@ -1,0 +1,90 @@
+<p-dialog
+    #logDialog
+    [modal]="true"
+    [(visible)]="visible"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [style]="{ width: '900px', height: '600px' }"
+    styleClass="min-w-[350px] min-h-[200px]"
+    [focusTrap]="true"
+    [focusOnShow]="true"
+    position="center"
+>
+    <ng-template #header>
+        <div class="inline-flex items-center justify-center gap-2">
+            <span class="font-bold whitespace-nowrap">User Activity</span>
+        </div>
+    </ng-template>
+    <ng-template #content>
+        <div class="flex flex-col gap-4 w-full">
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="time">Time</label>
+                    <p-datepicker [fluid]="true" inputId="time" [disabled]="true" variant="filled" dateFormat="dd-mm-yy"
+                                  [showTime]="true" hourFormat="12" [ngModel]="model().createdAt"/>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="user">User</label>
+                    <input pInputText id="user" [disabled]="true" [value]="model()?.user?.username"/>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="ipAddress">IP Address</label>
+                    <input pInputText id="ipAddress" [disabled]="true" [value]="model().ipAddress"/>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="userAgent">User Agent</label>
+                    <textarea pTextarea id="userAgent" [disabled]="true" [value]="model().userAgent" [rows]="3"
+                              [autoResize]="true"></textarea>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="module">Module</label>
+                    <input pInputText id="module" [disabled]="true" [value]="model()?.module?.name"/>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="action">Action</label>
+                    <input pInputText id="action" [disabled]="true" [value]="model().action"/>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="entityType">Entity Type</label>
+                    <input pInputText id="entityType" [disabled]="true" [value]="model().entityType"/>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="entityId">Entity Id</label>
+                    <input pInputText id="entityId" [disabled]="true" [value]="model().entityId"/>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="oldData">Old Data</label>
+                    <textarea pTextarea id="oldData" [disabled]="true" [value]="model().oldData" [rows]="3"
+                              [autoResize]="true"></textarea>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-col w-full">
+                    <label for="newData">New Data</label>
+                    <textarea pTextarea id="newData" [disabled]="true" [value]="model().newData" [rows]="3"
+                              [autoResize]="true"></textarea>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <div class="inline-flex items-center justify-center gap-4 mt-4">
+            <p-button label="Close" (click)="visible.set(false)" outlined/>
+        </div>
+    </ng-template>
+</p-dialog>

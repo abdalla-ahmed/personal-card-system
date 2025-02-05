@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { SharedConstants } from '../common/constants';
 import { UserManagerService } from '../services/user-manager.service';
 import { AppSession } from '../models';
+import {SKIP_ERROR_HANDLING} from "../../shared/http-clients/http-client-base";
 
 export const ServerResponseInterceptor: HttpInterceptorFn = (req, next) => {
     const spinner = inject(AppSpinnerService);
@@ -20,6 +21,10 @@ export const ServerResponseInterceptor: HttpInterceptorFn = (req, next) => {
     const defaultErrMsg = 'An unknown error occurred.';
 
     return next(req).pipe(catchError((err: HttpErrorResponse) => {
+
+        if(req.context.get(SKIP_ERROR_HANDLING) === true) {
+            throw err;
+        }
 
         // if the outgoing request was not heading to our api, don't check the response
         if (!req.url.toLowerCase().startsWith(SharedConstants.API_BASE_URL.toLowerCase())) {

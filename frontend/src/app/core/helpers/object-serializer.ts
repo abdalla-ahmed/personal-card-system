@@ -3,6 +3,7 @@ import moment from "moment";
 export type ClassType<T> = { new(...args: any[]): T };
 export type ClassTypeMap<T> = Record<string, ClassType<T>>;
 
+
 /**
  * Recursively reconstructs objects with their associated classes.
  *
@@ -74,4 +75,23 @@ export function deserialize<T>(
     }
 
     return mapToClass(parsedData, classType, classMap);
+}
+
+
+
+/**
+ * Converts the instance to a JSON string.
+ * Handles circular references.
+ */
+export function serialize(obj: any): string {
+    const cache = new WeakSet();
+    return JSON.stringify(obj, (key, value) => {
+        if (typeof value === 'object' && value !== null) {
+            if (cache.has(value)) {
+                return; // Avoid circular reference
+            }
+            cache.add(value);
+        }
+        return value;
+    });
 }

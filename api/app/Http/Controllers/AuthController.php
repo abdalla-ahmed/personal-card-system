@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\ActivityAction;
+use App\Constants\ModuleID;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Services\Activity;
 use App\Services\AuthService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -28,6 +31,7 @@ class AuthController extends ApiController
         $token = $this->authService->generateToken($user, $sessionId);
         $userWithAccessTokenAndPermissions = $this->userService->mapUserWithAccessTokenAndPermissions($user, $token);
 
+        Activity::Log(ModuleID::Users, ActivityAction::USER_SIGNUP, $user);
         return $this->resSuccess($userWithAccessTokenAndPermissions)
             ->withHeaders([
                 'X-Session-ID' => $token
@@ -48,6 +52,7 @@ class AuthController extends ApiController
         $token = $this->authService->generateToken($user, $sessionId);
         $userWithAccessTokenAndPermissions = $this->userService->mapUserWithAccessTokenAndPermissions($user, $token);
 
+        Activity::Log(ModuleID::Users, ActivityAction::USER_LOGIN, $user);
         return $this->resSuccess($userWithAccessTokenAndPermissions)
             ->withHeaders([
                 'X-Session-ID' => $sessionId
@@ -66,6 +71,7 @@ class AuthController extends ApiController
         $user = $request->user();
         $this->authService->revokeToken($user, $sessionId);
 
+        Activity::Log(ModuleID::Users, ActivityAction::USER_LOGOUT, $user);
         return $this->resNoContent();
     }
 
@@ -81,6 +87,7 @@ class AuthController extends ApiController
         $token = $this->authService->generateToken($user, $sessionId);
         $userWithAccessTokenAndPermissions = $this->userService->mapUserWithAccessTokenAndPermissions($user, $token);
 
+        Activity::Log(ModuleID::Users, ActivityAction::USER_TOKEN_REFRESH, $user);
         return $this->resSuccess($userWithAccessTokenAndPermissions)
             ->withHeaders([
                 'X-Session-ID' => $sessionId

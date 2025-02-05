@@ -9,13 +9,15 @@ import { AppToastService } from '../../../../shared/services/app-toast.service'
 import { SubSink } from 'subsink';
 import { CardDialogComponent } from '../card-dialog/card-dialog.component';
 import { SharedConstants } from '../../../../core/common/constants';
+import {PersonalCardComponent} from "../../../../shared/components/card/card.component";
 
 @Component({
     selector: 'app-card-search',
     templateUrl: './card-search.component.html',
     styleUrl: './card-search.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [AppSharedModule, CardDialogComponent],
+    imports: [AppSharedModule, CardDialogComponent, PersonalCardComponent],
+    standalone: true,
 })
 export class CardSearchComponent implements OnInit, OnDestroy {
     private readonly subs = new SubSink();
@@ -40,32 +42,35 @@ export class CardSearchComponent implements OnInit, OnDestroy {
         return `${SharedConstants.API_BASE_URL}/qr-code?entity_type=card&entity_id=${card.id}`;
     }
 
-    get form() { return this.cardService.form; }
+    get form() {
+        return this.cardService.form;
+    }
 
     constructor() {
-        this.subs.sink = this.cardService.cardCreated
-            .subscribe(cardId => {
-                this.getAllCards();
-            });
-        this.subs.sink = this.cardService.cardUpdated
-            .subscribe(cardId => {
-                this.getAllCards();
-            });
-        this.subs.sink = this.cardService.cardDeleted
-            .subscribe(cardId => {
-                this.getAllCards();
-            });
+        this.subs.sink = this.cardService.cardCreated.subscribe((cardId) => {
+            this.getAllCards();
+        });
+        this.subs.sink = this.cardService.cardUpdated.subscribe((cardId) => {
+            this.getAllCards();
+        });
+        this.subs.sink = this.cardService.cardDeleted.subscribe((cardId) => {
+            this.getAllCards();
+        });
     }
 
     ngOnInit() {
         this.rowActions = [
             {
                 label: 'Edit',
-                command: (e) => { this.cardService.showEditCardDialog(this.selectedCard); }
+                command: (e) => {
+                    this.cardService.showEditCardDialog(this.selectedCard);
+                },
             },
             {
                 label: 'Delete',
-                command: (e) => { this.cardService.deleteCard(this.selectedCard); }
+                command: (e) => {
+                    this.cardService.deleteCard(this.selectedCard);
+                },
             },
         ];
 
@@ -77,14 +82,12 @@ export class CardSearchComponent implements OnInit, OnDestroy {
     }
 
     private getAllCards() {
-        this.subs.sink = this.cardClient.all()
-            .subscribe(cards => {
-                this.cards.set(cards);
-            });
+        this.subs.sink = this.cardClient.all().subscribe((cards) => {
+            this.cards.set(cards);
+        });
     }
 
-    onActionsBtnClick(e: any, rowData: any) {
+    onActionsBtnClick(rowData: any) {
         this.selectedCard = rowData;
-        this.rowMenu.toggle(e);
     }
 }

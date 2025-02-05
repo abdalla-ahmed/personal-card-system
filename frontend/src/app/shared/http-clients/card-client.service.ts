@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClientBase, IS_FILE_UPLOAD } from './http-client-base';
+import {HttpClientBase, IS_FILE_UPLOAD, SKIP_ERROR_HANDLING} from './http-client-base';
 import { HttpContext } from '@angular/common/http';
 
 export interface CardForListDto {
@@ -67,6 +67,12 @@ export class CardClientService extends HttpClientBase {
 
     getById(id: number) {
         return this.get<CardDto>(`cards/${id}`);
+    }
+
+    publicGetById(id: number) {
+        return this.http.get<CardDto>(`${this.baseUrl}/public/cards/${id}`, {
+            context: new HttpContext().set(SKIP_ERROR_HANDLING, true),
+        });
     }
 
     createCard(dto: CreateCardDto, logoImageFile?: File) {
