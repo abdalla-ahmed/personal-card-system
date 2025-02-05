@@ -1,1 +1,3 @@
-# personal-card-system
+Personal Card Management Web App
+
+Laravel & Angular
