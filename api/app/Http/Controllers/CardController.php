@@ -7,15 +7,28 @@ use App\Constants\ModuleID;
 use App\Http\Requests\Card\CreateCardRequest;
 use App\Http\Requests\Card\UpdateCardRequest;
 use App\Models\Card;
+use App\Models\User;
+use App\Models\UserRole;
 use App\Services\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CardController extends ApiController
 {
     public function index(Request $request)
     {
-        $cards = Card::where('user_id', $request->user()->id)
-            ->orderBy('id', 'asc')->get();
+        $currentUser = User::select(['id', 'security_level'])->find(Auth::id());
+        $currentUserRoles = UserRole::where('user_id', $currentUser->id)->select(['user_id', 'role_id'])->get();
+        $cards = [];
+
+        if ($currentUserRoles->contains('role_id', '=', 1)) { // current user is in admin role
+            $cards = Card::with('user:security_level')
+                ->whereRelation('user', 'security_level', '<=', $currentUser->security_level)
+                ->orderBy('id', 'asc')->get();
+        } else {
+            $cards = Card::where('user_id', $currentUser->id)
+                ->orderBy('id', 'asc')->get();
+        }
 
         $mappedCards = $cards->map(function ($card) {
             return $this->mapCard($card);
@@ -85,6 +98,10 @@ class CardController extends ApiController
 
     public function update(Request $request, Card $card)
     {
+        if (Auth::user()->security_level < $card->user->security_level) {
+            return $this->resUnauthorized();
+        }
+
         $fileName = null;
         $file = $request->file('logoImageFile');
         if (!is_null($file)) {
@@ -117,8 +134,27 @@ class CardController extends ApiController
         return $this->resNoContent();
     }
 
+    public function updateState(Request $request, Card $card)
+    {
+        if (Auth::user()->security_level < $card->user->security_level) {
+            return $this->resUnauthorized();
+        }
+
+        $data = $request->validate(['active' => 'required|bool']);
+
+        if (!$card->update($data)) {
+            return $this->resError('Failed update card state');
+        }
+
+        return $this->resNoContent();
+    }
+
     public function destroy(Card $card)
     {
+        if (Auth::user()->security_level < $card->user->security_level) {
+            return $this->resUnauthorized();
+        }
+
         if (!$card->delete()) {
             return $this->resError('Failed to delete card');
         }

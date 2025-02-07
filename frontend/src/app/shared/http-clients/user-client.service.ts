@@ -18,6 +18,7 @@ export interface UserDto {
     id?: number;
     username?: string;
     email?: string;
+    securityLevel?: number;
     roles?: number[];
 }
 
@@ -25,6 +26,7 @@ export interface CreateUserDto {
     username?: string;
     email?: string;
     password?: string;
+    securityLevel?: number;
     roles?: number[];
 }
 
@@ -33,6 +35,7 @@ export interface UpdateUserDto {
     username?: string;
     email?: string;
     password?: string;
+    securityLevel?: number;
     roles?: number[];
 }
 

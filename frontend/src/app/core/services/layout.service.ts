@@ -33,7 +33,7 @@ export class LayoutService {
 
     _config: layoutConfig = JSON.parse(localStorage.getItem(this.localStorageKey)!) || {
         preset: 'Aura',
-        primary: 'purple',
+        primary: 'pink',
         surface: 'zinc',
         darkTheme: true,
         menuMode: 'static',

@@ -20,6 +20,7 @@ class UpdateUserRequest extends ApiRequest
             'password' =>   'nullable|string|min:4|max:50',
             'roles' =>      'required|array',
             'roles.*' =>    'integer',
+            'securityLevel' =>  'required|integer',
         ];
     }
 }

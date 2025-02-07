@@ -21,7 +21,7 @@ class PermissionService
     {
         // The default admin user can do anything,
         // regardless of the actual permissions assigned.
-        if ($user->username == 'admin') {
+        if ($user->isSuperAdmin()) {
             return true;
         }
 
@@ -50,7 +50,7 @@ class PermissionService
     {
         // As you may notice, the default admin user cannot bypass a module's extra permissions.
 
-        $userModulePermissions = UserModulePermission::where('module_permission_id', $user->id)
+        $userModulePermissions = UserModulePermission::where('module_permission_id', $extraPermissionId)
             ->where('user_id', $user->id)
             ->exists();
         if ($userModulePermissions)

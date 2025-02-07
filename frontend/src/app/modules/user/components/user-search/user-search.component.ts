@@ -14,6 +14,8 @@ import { combineLatest } from 'rxjs';
 import { UserPermissionsService } from '../../services/user-permissions.service';
 import { UserDialogComponent } from '../user-dialog/user-dialog.component';
 import { UserPermissionsDialogComponent } from '../user-permissions-dialog/user-permissions-dialog.component';
+import {AuthService} from "../../../../core/services/auth.service";
+import {ExtraPermission} from "../../../../core/constants";
 
 @Component({
     selector: 'app-user-search',
@@ -64,7 +66,7 @@ export class UserSearchComponent implements OnInit, OnDestroy {
                 command: (e) => { this.userService.showEditUserDialog(this.selectedUser); }
             },
             {
-                label: 'Permissions',
+                label: 'Special Permissions',
                 command: (e) => { this.permissionsService.showUserPermissionsDialog(this.selectedUser); }
             },
             {

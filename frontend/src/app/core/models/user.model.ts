@@ -3,6 +3,7 @@ import { ModelBase } from './';
 export class User extends ModelBase {
     userId: number;
     username: string;
+    securityLevel: number;
     roles: number[];
     token: UserAccessToken;
     permissions: UserModulePermission[];

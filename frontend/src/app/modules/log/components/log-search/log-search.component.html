@@ -23,7 +23,7 @@
 					scrollHeight="300px"
 					[resizableColumns]="true"
 					columnResizeMode="fit"
-					[globalFilterFields]="['name']"
+					[globalFilterFields]="['user.username', 'action', 'module.name', 'entityType', 'createdAt']"
 				>
 					<ng-template #caption>
 						<div class="flex flex-row place-content-between gap-4">
@@ -92,7 +92,7 @@
                                 {{ log.entityId }}
 							</td>
 							<td>
-                                {{ formatDate(log.createdAt) }}
+                                {{ log.createdAt | date:'hh:mm:ss a, dd-MM-yyyy' }}
 							</td>
 							<td>
 								<p-button

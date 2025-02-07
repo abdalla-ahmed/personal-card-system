@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\UserSecurityLevel;
 use App\Models\Module;
 use App\Models\ModulePermission;
 use App\Models\RoleModule;
@@ -13,18 +14,23 @@ use App\Models\UserRole;
 
 class UserService
 {
-    public function createUser($data): User
+    public function createUser($username, $email, $password, $securityLevel = UserSecurityLevel::L1, $roles = null): User
     {
-        $data['username'] = strtolower($data['username']);
-        $data['email'] = strtolower($data['email']);
+        $username = strtolower($username);
+        $email = strtolower($email);
 
-        if (!isset($data['roles'])) {
-            $data['roles'] = [2]; // normal user
+        if (empty($roles)) {
+            $roles = [2]; // normal user
         }
 
-        $user = User::create($data);
+        $user = User::create([
+            'username' => $username,
+            'email' => $email,
+            'password' => $password,
+            'security_level' => $securityLevel,
+        ]);
 
-        $userRoles = collect($data['roles'])->map(function ($roleId) use ($user) {
+        $userRoles = collect($roles)->map(function ($roleId) use ($user) {
             return [
                 'user_id' => $user->id,
                 'role_id' => $roleId,
@@ -74,7 +80,7 @@ class UserService
                 ->map(fn($x) => $x->module_permission_id)->values();
 
             $extraPermissions = collect($roleModulePermission);
-            $extraPermissions->merge($userModulePermission);
+            $extraPermissions = $extraPermissions->merge($userModulePermission);
 
             $permissions[] = [
                 'moduleId' => $moduleId,
@@ -89,6 +95,7 @@ class UserService
         return [
             'userId' => $user->id,
             'username' => $user->username,
+            'securityLevel' => $user->security_level,
             'roles' => $userRoleIdList,
             'permissions' => $permissions,
             'token' => $token,

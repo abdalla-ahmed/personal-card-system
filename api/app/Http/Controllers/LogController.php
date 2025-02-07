@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Constants\ActivityAction;
 use App\Constants\ModuleID;
+use App\Constants\UserSecurityLevel;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Services\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LogController extends ApiController
 {
@@ -56,6 +58,10 @@ class LogController extends ApiController
 
     public function destroy()
     {
+        if (Auth::user()->security_level < UserSecurityLevel::L5) {
+            return $this->resUnauthorized();
+        }
+
         ActivityLog::query()->delete();
         Activity::Log(ModuleID::ActivityLogs, ActivityAction::LOGS_PURGE);
         return $this->resNoContent();

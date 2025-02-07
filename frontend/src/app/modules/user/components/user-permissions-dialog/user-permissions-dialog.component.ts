@@ -2,16 +2,17 @@ import { ChangeDetectionStrategy, Component, inject, input, model, OnInit } from
 import { AppSharedModule } from '../../../../app-shared.module';
 import { UserForListDto } from '../../../../shared/http-clients/user-client.service';
 import { UserPermissionsService } from '../../services/user-permissions.service';
-import { TableRowCollapseEvent, TableRowExpandEvent } from 'primeng/table';
-import { CheckboxChangeEvent } from 'primeng/checkbox';
 import { PermissionsGridComponent } from '../../../../shared/components/permissions-grid/permissions-grid.component';
+import {ExtraPermission} from "../../../../core/constants";
+import {AuthService} from "../../../../core/services/auth.service";
 
 @Component({
     selector: 'app-user-permissions-dialog',
     templateUrl: './user-permissions-dialog.component.html',
     styleUrls: ['./user-permissions-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [AppSharedModule, PermissionsGridComponent]
+    standalone: true,
+    imports: [AppSharedModule, PermissionsGridComponent],
 })
 export class UserPermissionsDialogComponent implements OnInit {
     visible = model.required<boolean>();
@@ -19,7 +20,7 @@ export class UserPermissionsDialogComponent implements OnInit {
 
     readonly permissionsService = inject(UserPermissionsService);
 
-    constructor() { }
+    constructor() {}
 
-    ngOnInit() { }
+    ngOnInit() {}
 }

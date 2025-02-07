@@ -6,6 +6,7 @@ import { AppToastService } from '../../../shared/services/app-toast.service';
 import { AppConfirmationService } from '../../../shared/services/app-confirmation.service';
 import { RoleClientService } from '../../../shared/http-clients/role-client.service';
 import { AuthService } from '../../../core/services/auth.service';
+import {ExtraPermission} from "../../../core/constants";
 
 @Injectable({
     providedIn: 'root'
@@ -27,6 +28,9 @@ export class UserService {
     userUpdated = new EventEmitter<number>();
     userDeleted = new EventEmitter<number>();
 
+    canAssignRoles = false;
+    canChangeSecurityLevel = false;
+
     constructor() {
         this.form = this.fb.group({
             id: null,
@@ -34,8 +38,18 @@ export class UserService {
             email: null,
             password: null,
             roles: null,
+            securityLevel: null,
         });
         this.blankFormData = structuredClone(this.form.getRawValue());
+        this.authService.onTokenRefresh.subscribe(x => {
+            this._checkExtraPermissions();
+        })
+        this._checkExtraPermissions();
+    }
+
+    _checkExtraPermissions() {
+        this.canAssignRoles = this.authService.hasExtraPermission(ExtraPermission.Assign_roles);
+        this.canChangeSecurityLevel = this.authService.hasExtraPermission(ExtraPermission.Change_security_level);
     }
 
     showEditUserDialog(user: UserForListDto) {
@@ -76,16 +90,28 @@ export class UserService {
         usernameCtrl.setValidators(Validators.required);
         this.form.get('email').setValidators(Validators.required);
         this.form.get('roles').setValidators(Validators.required);
+        this.form.get('securityLevel').setValidators(Validators.required);
 
         if (this.formState === FormState.Create) {
             this.form.get('password').setValidators(Validators.required);
             this.form.get('roles').setValue([2]); // normal user
+            this.form.get('securityLevel').setValue(1); // lowest security level
         } else if (this.formState === FormState.Update) {
             if (usernameCtrl.value === 'admin')
                 usernameCtrl.disable();
             else
                 usernameCtrl.enable();
         }
+
+        if(!this.canAssignRoles)
+            this.form.controls['roles'].disable();
+        else
+            this.form.controls['roles'].enable();
+
+        if(!this.canChangeSecurityLevel)
+            this.form.controls['securityLevel'].disable();
+        else
+            this.form.controls['securityLevel'].enable();
     }
 
     validateForm(): boolean {

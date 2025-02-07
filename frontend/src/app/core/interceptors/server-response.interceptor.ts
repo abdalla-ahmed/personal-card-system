@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 import { SharedConstants } from '../common/constants';
 import { UserManagerService } from '../services/user-manager.service';
 import { AppSession } from '../models';
-import {SKIP_ERROR_HANDLING} from "../../shared/http-clients/http-client-base";
+import {SKIP_API_ERROR_RESPONSE_HANDLING} from "../../shared/http-clients/http-client-base";
 
 export const ServerResponseInterceptor: HttpInterceptorFn = (req, next) => {
     const spinner = inject(AppSpinnerService);
@@ -22,7 +22,7 @@ export const ServerResponseInterceptor: HttpInterceptorFn = (req, next) => {
 
     return next(req).pipe(catchError((err: HttpErrorResponse) => {
 
-        if(req.context.get(SKIP_ERROR_HANDLING) === true) {
+        if(req.context.get(SKIP_API_ERROR_RESPONSE_HANDLING) === true) {
             throw err;
         }
 
@@ -78,11 +78,12 @@ export const ServerResponseInterceptor: HttpInterceptorFn = (req, next) => {
 
         throw err;
     }), map(event => {
-        if (event.type === HttpEventType.Response) {
+        if (event.type === HttpEventType.Response
+        && req.url.toLowerCase().startsWith(SharedConstants.API_BASE_URL.toLowerCase())) {
             if (event.headers.has('X-Session-ID')) {
                 userManagerService.setSession(AppSession.fromJson({ sessionId: event.headers.get('X-Session-ID') }));
             }
-            event = event.clone({ body: (event.body as any)?.data });
+            event = event.clone({ body: (<any>event.body)?.data });
         }
         return event;
     }), finalize(() => spinner.hide()));

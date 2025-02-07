@@ -160,9 +160,14 @@
 		</form>
 	</ng-template>
 	<ng-template #footer>
-		<div class="inline-flex items-center justify-center gap-4 mt-4">
-			<p-button label="Cancel" (click)="cardService.hideCardDialog()" outlined />
-			<p-button label="Save" (click)="cardService.saveCard()" icon="pi pi-save" />
+		<div class="flex justify-between gap-4 mt-4 w-full">
+            <div class="">
+                <p-button *ngIf="!cardService.isNewEntity" [label]="form.value.active ? 'Deactivate': 'Reactivate'" (click)="cardService.toggleCardState()" [severity]="form.value.active ? 'danger': 'info'" outlined />
+            </div>
+            <div class="space-x-4">
+                <p-button label="Cancel" (click)="cardService.hideCardDialog()" outlined />
+                <p-button label="Save" (click)="cardService.saveCard()" icon="pi pi-save" />
+            </div>
 		</div>
 	</ng-template>
 </p-dialog>

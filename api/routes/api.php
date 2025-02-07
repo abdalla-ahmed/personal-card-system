@@ -50,11 +50,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/users/{user}/permissions', [UserController::class, 'updatePermissions'])->middleware('xp:1');
     });
 
+
     Route::middleware(['module:4'])->group(function () {
         Route::get('/cards', [CardController::class, 'index'])->middleware(['mp:view']);
-        //Route::get('/cards/{card}', [CardController::class, 'show'])->middleware(['mp:view']);
+        Route::get('/cards/{card}', [CardController::class, 'show'])->middleware(['mp:view']);
         Route::post('/cards', [CardController::class, 'store'])->middleware('mp:create');
         Route::post('/cards/{card}', [CardController::class, 'update'])->middleware('mp:update'); // Yes POST not PUT (not a mistake)
+        Route::patch('/cards/{card}', [CardController::class, 'updateState'])->middleware('mp:update');
         Route::delete('/cards/{card}', [CardController::class, 'destroy'])->middleware(['mp:delete']);
     });
 });

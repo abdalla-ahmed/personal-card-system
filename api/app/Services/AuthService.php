@@ -24,8 +24,11 @@ class AuthService
      *     refreshTokenExpirationDate: date,
      * }
      */
-    public function generateToken(User $user, string $sessionId): array
+    public function generateToken(User $user, string $sessionId): array|null
     {
+        if (!$user || empty($sessionId))
+            return null;
+
         $atExpireTime = now()->addMinutes(config('sanctum.expiration'));
         $rtExpireTime = now()->addMinutes(config('sanctum.rt_expiration'));
 
@@ -42,10 +45,15 @@ class AuthService
 
     public function revokeToken(User $user, string $sessionId)
     {
-        $user->tokens()
+        if (!$user)
+            return false;
+
+        $affected = $user->tokens()
             ->where('name', "access_token_{$sessionId}")
             ->orWhere('name', "refresh_token_{$sessionId}")
             ->delete();
+
+        return $affected == 2;
     }
 
     public function sendResetPasswordLink($email): string

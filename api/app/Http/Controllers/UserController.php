@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Constants\ActivityAction;
+use App\Constants\ModuleExtraPermission;
 use App\Constants\ModuleID;
+use App\Constants\UserSecurityLevel;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\Role;
@@ -12,8 +14,10 @@ use App\Models\UserModule;
 use App\Models\UserModulePermission;
 use App\Models\UserRole;
 use App\Services\Activity;
+use App\Services\PermissionService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends ApiController
 {
@@ -38,6 +42,7 @@ class UserController extends ApiController
                 'id' => $u->id,
                 'username' => $u->username,
                 'email' => $u->email,
+                'securityLevel' => $u->security_level,
                 'roles' => $userRoles->filter(fn($r) => $r->userId === $u->id)->values(),
             ];
         });
@@ -47,6 +52,10 @@ class UserController extends ApiController
 
     public function show(User $user)
     {
+        if (Auth::user()->security_level < $user->security_level) {
+            return $this->resUnauthorized();
+        }
+
         $mappedUser = $this->mapUserWithRoles($user);
 
         return $this->resSuccess($mappedUser);
@@ -54,7 +63,21 @@ class UserController extends ApiController
 
     public function store(CreateUserRequest $request)
     {
+        $currentUser = $request->user();
         $data = $request->validated();
+
+        if ($data['securityLevel'] != UserSecurityLevel::L1
+            && !PermissionService::checkModuleExtraPermission($currentUser,
+                ModuleExtraPermission::Change_security_level)) {
+            return $this->resUnauthorized("You don't have the necessary permissions to change user's security level");
+        }
+
+        $isOnlyUserRole = $data['roles'] == [2];
+        if (!$isOnlyUserRole
+            && !PermissionService::checkModuleExtraPermission($currentUser,
+                ModuleExtraPermission::Assign_roles)) {
+            return $this->resUnauthorized("You don't have the necessary permissions to change user's roles");
+        }
 
         if (User::where('username', $data['username'])->exists()) {
             return $this->resError('Username has been already taken');
@@ -64,7 +87,14 @@ class UserController extends ApiController
             return $this->resError('Email address belongs to another user');
         }
 
-        $user = $this->userService->createUser($data);
+        $user = $this->userService->createUser(
+            $data['username'],
+            $data['email'],
+            $data['password'],
+            $data['securityLevel'] ?? UserSecurityLevel::L1,
+            $data['roles'],
+        );
+
         if (is_null($user)) {
             return $this->resError('Failed to create user');
         }
@@ -75,11 +105,29 @@ class UserController extends ApiController
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        $currentUser = $request->user();
         $data = $request->validated();
 
-        if (is_null($data['password']) || strlen($data['password']) === 0) {
-            unset($data['password']);
+        if ($currentUser->security_level < $user->security_level) {
+            return $this->resUnauthorized();
         }
+
+        if ($data['securityLevel'] != $user->security_level
+            && !PermissionService::checkModuleExtraPermission($currentUser,
+                ModuleExtraPermission::Change_security_level)) {
+            return $this->resUnauthorized("You don't have the necessary permissions to change user's security level");
+        }
+
+        $currentUserRoles = UserRole::where('user_id', $user->id)
+            ->select('role_id')->get()
+            ->map(fn($r) => $r->role_id);
+
+        $isRolesChanged = collect($data['roles'])->sort()->values() != $currentUserRoles->sort()->values();
+        if ($isRolesChanged && !PermissionService::checkModuleExtraPermission($currentUser,
+                ModuleExtraPermission::Assign_roles)) {
+            return $this->resUnauthorized("You don't have the necessary permissions to change user's roles");
+        }
+
 
         $data['username'] = strtolower($data['username']);
         $data['email'] = strtolower($data['email']);
@@ -112,8 +160,18 @@ class UserController extends ApiController
             }
         }
 
+        $userUpdateRecord = [
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'security_level' => $data['securityLevel'],
+        ];
+
+        if (!empty($data['password'])) {
+            $userUpdateRecord['password'] = $data['password'];
+        }
+
         // update user
-        if (!$user->update($data)) {
+        if (!$user->update($userUpdateRecord)) {
             return $this->resError('Failed to update user');
         }
 
@@ -127,6 +185,10 @@ class UserController extends ApiController
 
     public function destroy(User $user)
     {
+        if (Auth::user()->security_level < $user->security_level) {
+            return $this->resUnauthorized();
+        }
+
         if ($user->username === 'admin') {
             return $this->resError('The default admin user cannot be deleted');
         }
@@ -141,6 +203,10 @@ class UserController extends ApiController
 
     public function permissions(User $user)
     {
+        if (Auth::user()->security_level < $user->security_level) {
+            return $this->resUnauthorized();
+        }
+
         $userPermissions = $this->userService->mapUserPermissions($user);
 
         return $this->resSuccess($userPermissions);
@@ -148,6 +214,10 @@ class UserController extends ApiController
 
     public function updatePermissions(Request $request, User $user)
     {
+        if (Auth::user()->security_level < $user->security_level) {
+            return $this->resUnauthorized();
+        }
+
         $data = $request->all();
 
         if (!isset($data['permissions'])) {
@@ -195,6 +265,7 @@ class UserController extends ApiController
             'id' => $user->id,
             'username' => $user->username,
             'email' => $user->email,
+            'securityLevel' => $user->security_level,
             'roles' => $user->roles->map(fn($x) => $x->role_id)->values(),
         ];
     }

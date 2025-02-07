@@ -17,7 +17,8 @@ class Card extends Model
         'address',
         'company_name',
         'company_address',
-        'logo_file_name'
+        'logo_file_name',
+        'active',
     ];
 
     protected function casts(): array

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Constants\ActivityAction;
 use App\Constants\ModuleID;
 use App\Models\ActivityLog;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +21,8 @@ class Activity
         ActivityAction $action,
         Model|null     $entity = null,
         array|null     $oldData = null,
-        array|null     $newData = null
+        array|null     $newData = null,
+        User|null      $user = null, // fallback user
     ): void
     {
         $old_data = $oldData;
@@ -62,7 +64,7 @@ class Activity
         $request = request();
 
         ActivityLog::create([
-            'user_id' => Auth::id(),
+            'user_id' => $user ?? Auth::id(),
             'ip_address' => $request->ip() ?? null,
             'user_agent' => $request->userAgent() ?? null,
             'module_id' => $moduleId,

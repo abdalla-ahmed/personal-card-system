@@ -103,4 +103,10 @@ export class AuthService {
         return false;
     }
 
+    hasExtraPermission(extraPermissionId:number) {
+        if(this.hasUser){
+            return this.user?.permissions?.some(x => x.extraPermissions.includes(extraPermissionId));
+        }
+        return false;
+    }
 }

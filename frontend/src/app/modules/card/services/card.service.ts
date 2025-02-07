@@ -136,6 +136,24 @@ export class CardService {
         });
     }
 
+    toggleCardState() {
+        this.confirmation.confirm({
+            message: `Are you sure you want to ${this.formData.active ? 'deactivate' : 'reactivate'} the card ?`,
+            accept: () => {
+                this.cardClient.updateState({
+                    id: this.formData.id,
+                    active: !this.formData.active // reverse
+                }).subscribe({
+                    next: () => {
+                        this.cardUpdated.emit(this.formData.id);
+                        this.toast.success(`Card ${this.formData.active ? 'deactivated' : 'reactivated'} successfully`);
+                        this.hideCardDialog();
+                    }
+                });
+            }
+        });
+    }
+
     onLogoFileSelected(e: FileSelectEvent) {
         this.selectedLogoFile = e.files[0];
     }

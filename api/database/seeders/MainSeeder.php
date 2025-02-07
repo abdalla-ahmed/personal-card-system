@@ -29,7 +29,9 @@ class MainSeeder extends Seeder
     ];
 
     private $modulePermissions = [
-        ['id' => 1, 'module_id' => 3, 'description' => 'View and update user permissions'],
+        ['id' => 1, 'module_id' => 3, 'description' => 'View and update special permissions'],
+        ['id' => 2, 'module_id' => 3, 'description' => 'Assign roles'],
+        ['id' => 3, 'module_id' => 3, 'description' => 'Change security level'],
     ];
 
 
@@ -45,7 +47,8 @@ class MainSeeder extends Seeder
         $user = User::create([
             'username' => 'admin',
             'email' => 'admin@what.ever',
-            'password' => 'admin'
+            'password' => 'admin',
+            'security_level' => 5,
         ]);
 
         UserRole::create([

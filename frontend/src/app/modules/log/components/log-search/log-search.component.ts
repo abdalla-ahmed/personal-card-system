@@ -17,7 +17,6 @@ import {
 } from '../../../../shared/http-clients/activity-log-client.service';
 import { LogDialogComponent } from '../log-dialog/log-dialog.component';
 import {AppConfirmationService} from "../../../../shared/services/app-confirmation.service";
-import moment from "moment";
 
 @Component({
     selector: 'app-log-search',
@@ -69,13 +68,10 @@ export class LogSearchComponent implements OnInit, OnDestroy {
             message: `Are you sure you want to delete all activity logs ?`,
             accept: () => {
                 this.subs.sink = this.activityLogClient.purge().subscribe(() => {
-                    this.toast.success('Activity Logs deleted successfully');
+                    this.toast.success('Activity Log cleared successfully');
                 });
             }
         });
     }
 
-    formatDate(date: Date) {
-        return moment(date, moment.ISO_8601, true).format('DD-MM-yyyy hh:mm:ss A');
-    }
 }

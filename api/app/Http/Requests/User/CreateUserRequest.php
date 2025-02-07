@@ -20,6 +20,7 @@ class CreateUserRequest extends ApiRequest
             'password' =>   'required|string|min:4|max:50',
             'roles' =>      'required|array',
             'roles.*' =>    'integer',
+            'securityLevel' =>  'required|integer',
         ];
     }
 }

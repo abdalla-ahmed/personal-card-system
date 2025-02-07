@@ -2,7 +2,10 @@
 
 namespace App\Constants;
 
-enum ModuleExtraPermission: int
+class ModuleExtraPermission
 {
-    case Can_view_and_update_user_permissions = 1;
+    // user
+    const View_and_update_special_permissions = 1;
+    const Assign_roles = 2;
+    const Change_security_level = 3;
 }

@@ -19,17 +19,21 @@ class AuthController extends ApiController
     public function __construct(
         private readonly AuthService $authService,
         private readonly UserService $userService
-    ) {}
+    )
+    {
+    }
 
     public function register(RegisterRequest $request)
     {
         $data = $request->validated();
 
-        $user = $this->userService->createUser($data);
+        $user = $this->userService->createUser($data['username'], $data['email'], $data['password']);
 
         $sessionId = $this->authService->generateSessionId();
         $token = $this->authService->generateToken($user, $sessionId);
         $userWithAccessTokenAndPermissions = $this->userService->mapUserWithAccessTokenAndPermissions($user, $token);
+
+        Auth::setUser($user);
 
         Activity::Log(ModuleID::Users, ActivityAction::USER_SIGNUP, $user);
         return $this->resSuccess($userWithAccessTokenAndPermissions)
@@ -52,6 +56,8 @@ class AuthController extends ApiController
         $token = $this->authService->generateToken($user, $sessionId);
         $userWithAccessTokenAndPermissions = $this->userService->mapUserWithAccessTokenAndPermissions($user, $token);
 
+        Auth::setUser($user);
+
         Activity::Log(ModuleID::Users, ActivityAction::USER_LOGIN, $user);
         return $this->resSuccess($userWithAccessTokenAndPermissions)
             ->withHeaders([
@@ -69,7 +75,9 @@ class AuthController extends ApiController
 
         // currently authenticated user
         $user = $request->user();
-        $this->authService->revokeToken($user, $sessionId);
+        if (!is_null($user)) {
+            $this->authService->revokeToken($user, $sessionId);
+        }
 
         Activity::Log(ModuleID::Users, ActivityAction::USER_LOGOUT, $user);
         return $this->resNoContent();

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClientBase, IS_FILE_UPLOAD, SKIP_ERROR_HANDLING} from './http-client-base';
+import {HttpClientBase, IS_FILE_UPLOAD, SKIP_API_ERROR_RESPONSE_HANDLING} from './http-client-base';
 import { HttpContext } from '@angular/common/http';
 
 export interface CardForListDto {
@@ -53,6 +53,11 @@ export interface UpdateCardDto {
     companyAddress: string;
 }
 
+export interface UpdateCardStateDto {
+    id: number;
+    active: boolean;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -71,7 +76,7 @@ export class CardClientService extends HttpClientBase {
 
     publicGetById(id: number) {
         return this.http.get<CardDto>(`${this.baseUrl}/public/cards/${id}`, {
-            context: new HttpContext().set(SKIP_ERROR_HANDLING, true),
+            context: new HttpContext().set(SKIP_API_ERROR_RESPONSE_HANDLING, true),
         });
     }
 
@@ -95,5 +100,9 @@ export class CardClientService extends HttpClientBase {
 
     deleteCard(id: number) {
         return this.delete(`cards/${id}`);
+    }
+
+    updateState(dto: UpdateCardStateDto) {
+        return this.patch(`cards/${dto.id}`, dto);
     }
 }
