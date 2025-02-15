@@ -5,6 +5,7 @@
     justify-content: space-between;
     padding: 5rem 1rem 0 2rem;
     transition: margin-left var(--layout-section-transition-duration);
+    overflow: hidden;
 }
 
 .layout-main {

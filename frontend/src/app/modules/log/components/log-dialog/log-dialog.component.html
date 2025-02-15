@@ -19,7 +19,7 @@
             <div class="flex flex-row">
                 <div class="flex flex-col w-full">
                     <label for="time">Time</label>
-                    <input pInputText id="time" [disabled]="true" [value]="(model().createdAt|date:'hh:mm:ss a, dd-MM-yyyy')"/>
+                    <input pInputText id="time" [disabled]="true" [value]="(model().createdAt|date:'dd-MM-yyyy hh:mm:ss a')"/>
                 </div>
             </div>
             <div class="flex flex-row">

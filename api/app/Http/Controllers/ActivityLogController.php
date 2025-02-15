@@ -11,7 +11,7 @@ use App\Services\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class LogController extends ApiController
+class ActivityLogController extends ApiController
 {
     public function index()
     {
@@ -58,12 +58,13 @@ class LogController extends ApiController
 
     public function destroy()
     {
+        // only users with the highest security level can delete activity log.
         if (Auth::user()->security_level < UserSecurityLevel::L5) {
             return $this->resUnauthorized();
         }
 
         ActivityLog::query()->delete();
-        Activity::Log(ModuleID::ActivityLogs, ActivityAction::LOGS_PURGE);
+        Activity::Log(ModuleID::ActivityLog, ActivityAction::LOGS_PURGE);
         return $this->resNoContent();
     }
 }

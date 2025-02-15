@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClientBase } from '../../shared/http-clients/http-client-base';
 import { User } from '../models';
 import { map } from 'rxjs';
+import { HttpContext, HttpContextToken } from '@angular/common/http';
 
 export interface LoginUserDto {
     username: string;
@@ -15,18 +16,20 @@ export interface RegisterUserDto {
     passwordConfirmation: string;
 }
 
+export const REFRESH_TOKEN = new HttpContextToken<boolean>(() => false);
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class AuthClientService extends HttpClientBase {
-
     constructor() {
         super();
     }
 
     login(dto: LoginUserDto) {
-        return this.post<User>('auth/login', dto).pipe(map(res => User.fromJson(res)));
+        return this.post<User>('auth/login', dto).pipe(
+            map((res) => User.fromJson(res)),
+        );
     }
 
     logout() {
@@ -34,11 +37,14 @@ export class AuthClientService extends HttpClientBase {
     }
 
     register(dto: RegisterUserDto) {
-        return this.post<User>('auth/register', dto).pipe(map(res => User.fromJson(res)));
+        return this.post<User>('auth/register', dto).pipe(
+            map((res) => User.fromJson(res)),
+        );
     }
 
-    refreshToken() {
-        return this.post<User>('auth/refresh-token', {}).pipe(map(res => User.fromJson(res)));
+    refreshToken(context?: HttpContext) {
+        return this.post<User>(`auth/refresh-token`, {}, context).pipe(
+            map((res) => User.fromJson(res)),
+        );
     }
-
 }

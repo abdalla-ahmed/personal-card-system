@@ -8,7 +8,7 @@ import { CardClientService, CardForListDto } from '../../../../shared/http-clien
 import { AppToastService } from '../../../../shared/services/app-toast.service'
 import { SubSink } from 'subsink';
 import { CardDialogComponent } from '../card-dialog/card-dialog.component';
-import { SharedConstants } from '../../../../core/common/constants';
+import { SharedConstants } from '../../../../core/constants';
 import {PersonalCardComponent} from "../../../../shared/components/card/card.component";
 
 @Component({

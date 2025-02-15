@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use App\Services\PermissionService;
+use App\Services\Permission;
 use App\Constants\ModuleAction;
 
 
@@ -46,8 +46,8 @@ class CheckModulePermission extends MiddlewareBase
             return $this->resUnexpected();
         }
 
-        if (!PermissionService::checkModulePermission($user, $action, $moduleId)) {
-            return $this->resUnauthorized("You don't have permissions.");
+        if (!Permission::checkModulePermission($user, $action, $moduleId)) {
+            return $this->resUnauthorized();
         }
 
         return $next($request);

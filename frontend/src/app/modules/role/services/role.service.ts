@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppToastService } from '../../../shared/services/app-toast.service';
 import { AppConfirmationService } from '../../../shared/services/app-confirmation.service';
 import { AuthService } from '../../../core/services/auth.service';
+import {firstValueFrom} from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -133,14 +134,14 @@ export class RoleService {
                 name: this.formData.name,
                 permissions: permissions
             }).subscribe({
-                next: () => {
-                    this.roleUpdated.emit(this.formData.id);
+                next: async () => {
                     this.toast.success('Role updated successfully');
+                    this.hideRoleDialog();
                     if (this.authService.user.roles.includes(this.formData.id)) {
                         // refresh current user's stored permissions
-                        this.authService.doRefreshToken().subscribe();
+                        await firstValueFrom(this.authService.reAuth());
                     }
-                    this.hideRoleDialog();
+                    this.roleUpdated.emit(this.formData.id);
                 }
             });
         }

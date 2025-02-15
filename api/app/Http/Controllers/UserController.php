@@ -7,6 +7,7 @@ use App\Constants\ModuleExtraPermission;
 use App\Constants\ModuleID;
 use App\Constants\UserSecurityLevel;
 use App\Http\Requests\User\CreateUserRequest;
+use App\Http\Requests\User\UpdateUserProfileRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
@@ -14,7 +15,7 @@ use App\Models\UserModule;
 use App\Models\UserModulePermission;
 use App\Models\UserRole;
 use App\Services\Activity;
-use App\Services\PermissionService;
+use App\Services\Permission;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,7 +57,7 @@ class UserController extends ApiController
             return $this->resUnauthorized();
         }
 
-        $mappedUser = $this->mapUserWithRoles($user);
+        $mappedUser = $this->userService->mapUserWithRoles($user);
 
         return $this->resSuccess($mappedUser);
     }
@@ -67,14 +68,14 @@ class UserController extends ApiController
         $data = $request->validated();
 
         if ($data['securityLevel'] != UserSecurityLevel::L1
-            && !PermissionService::checkModuleExtraPermission($currentUser,
+            && !Permission::checkModuleExtraPermission($currentUser,
                 ModuleExtraPermission::Change_security_level)) {
             return $this->resUnauthorized("You don't have the necessary permissions to change user's security level");
         }
 
         $isOnlyUserRole = $data['roles'] == [2];
         if (!$isOnlyUserRole
-            && !PermissionService::checkModuleExtraPermission($currentUser,
+            && !Permission::checkModuleExtraPermission($currentUser,
                 ModuleExtraPermission::Assign_roles)) {
             return $this->resUnauthorized("You don't have the necessary permissions to change user's roles");
         }
@@ -113,7 +114,7 @@ class UserController extends ApiController
         }
 
         if ($data['securityLevel'] != $user->security_level
-            && !PermissionService::checkModuleExtraPermission($currentUser,
+            && !Permission::checkModuleExtraPermission($currentUser,
                 ModuleExtraPermission::Change_security_level)) {
             return $this->resUnauthorized("You don't have the necessary permissions to change user's security level");
         }
@@ -123,7 +124,7 @@ class UserController extends ApiController
             ->map(fn($r) => $r->role_id);
 
         $isRolesChanged = collect($data['roles'])->sort()->values() != $currentUserRoles->sort()->values();
-        if ($isRolesChanged && !PermissionService::checkModuleExtraPermission($currentUser,
+        if ($isRolesChanged && !Permission::checkModuleExtraPermission($currentUser,
                 ModuleExtraPermission::Assign_roles)) {
             return $this->resUnauthorized("You don't have the necessary permissions to change user's roles");
         }
@@ -151,8 +152,8 @@ class UserController extends ApiController
             return $this->resError('One role at least is required');
         }
 
-        if ($user->username === 'admin') {
-            if ($data['username'] !== 'admin') {
+        if ($user->isSuperAdmin()) {
+            if ($data['username'] !== $user->username) {
                 return $this->resError('The default admin user cannot change the username');
             }
             if (!$userRoles->contains('role_id', 1)) {
@@ -255,18 +256,55 @@ class UserController extends ApiController
         UserModulePermission::where('user_id', $user->id)->delete();
         UserModulePermission::insert($userModulePermissions);
 
-        Activity::Log(ModuleID::Users, ActivityAction::PERMISSIONS_UPDATE, $user);
+        Activity::Log(ModuleID::Users, ActivityAction::USER_PERMISSIONS_UPDATE, $user);
         return $this->resNoContent();
     }
 
-    private function mapUserWithRoles(User $user)
+    public function profile(Request $request)
     {
-        return [
-            'id' => $user->id,
-            'username' => $user->username,
-            'email' => $user->email,
-            'securityLevel' => $user->security_level,
-            'roles' => $user->roles->map(fn($x) => $x->role_id)->values(),
+        $userProfile = $this->userService->mapUserProfile($request->user());
+        return $this->resSuccess($userProfile);
+    }
+
+    public function updateProfile(UpdateUserProfileRequest $request)
+    {
+        $data = $request->validated();
+        $currentUser = $request->user();
+
+        if (isset($data[$currentUser->getKeyName()]))
+            unset($data[$currentUser->getKeyName()]);
+
+        $data['username'] = strtolower($data['username']);
+        $data['email'] = strtolower($data['email']);
+
+        if (User::where('id', '!=', $currentUser->id)->where('username', $data['username'])->exists()) {
+            return $this->resError('Username has been already taken');
+        }
+
+        if (User::where('id', '!=', $currentUser->id)->where('email', $data['email'])->exists()) {
+            return $this->resError('Email address belongs to another user');
+        }
+
+        if ($currentUser->isSuperAdmin()) {
+            if ($data['username'] !== $currentUser->username) {
+                return $this->resError('The default admin user cannot change the username');
+            }
+        }
+
+        $userUpdateRecord = [
+            'username' => $data['username'],
+            'email' => $data['email'],
         ];
+
+        if (!empty($data['password'])) {
+            $userUpdateRecord['password'] = $data['password'];
+        }
+
+        if (!$currentUser->update($userUpdateRecord)) {
+            return $this->resError('Failed to update user profile');
+        }
+
+        Activity::Log(ModuleID::Users, ActivityAction::USER_PROFILE_UPDATE, $currentUser);
+        return $this->resNoContent();
     }
 }

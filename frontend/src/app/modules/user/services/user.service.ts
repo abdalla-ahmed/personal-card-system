@@ -7,6 +7,7 @@ import { AppConfirmationService } from '../../../shared/services/app-confirmatio
 import { RoleClientService } from '../../../shared/http-clients/role-client.service';
 import { AuthService } from '../../../core/services/auth.service';
 import {ExtraPermission} from "../../../core/constants";
+import {firstValueFrom} from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -135,14 +136,14 @@ export class UserService {
             });
         } else {
             this.userClient.updateUser(this.formData).subscribe({
-                next: () => {
-                    this.userUpdated.emit(this.formData.id);
+                next: async () => {
                     this.toast.success('User updated successfully');
+                    this.hideUserDialog();
                     if (this.formData.id === this.authService.user.userId) {
                         // refresh current user's stored permissions
-                        this.authService.doRefreshToken().subscribe();
+                        await firstValueFrom(this.authService.reAuth());
                     }
-                    this.hideUserDialog();
+                    this.userUpdated.emit(this.formData.id);
                 }
             });
         }

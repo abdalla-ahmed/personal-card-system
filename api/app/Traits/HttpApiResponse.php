@@ -37,7 +37,7 @@ trait HttpApiResponse
         return $this->resError($message, code: Response::HTTP_UNAUTHORIZED);
     }
 
-    public function resUnauthorized(string $message = 'You\'re not authorized to perform this action.'): JsonResponse
+    public function resUnauthorized(string $message = 'You are not authorized to perform this action.'): JsonResponse
     {
         return $this->resError($message, code: Response::HTTP_FORBIDDEN);
     }

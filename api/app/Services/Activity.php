@@ -47,7 +47,7 @@ class Activity
 
         if (!is_null($old_data)) {
             foreach (self::$hiddenProps as $prop) {
-                if (isset($old_data[$prop])) {
+                if (!empty($old_data[$prop])) {
                     $old_data[$prop] = '<hidden>';
                 }
             }
@@ -55,7 +55,7 @@ class Activity
 
         if (!is_null($new_data)) {
             foreach (self::$hiddenProps as $prop) {
-                if (isset($new_data[$prop])) {
+                if (!empty($new_data[$prop])) {
                     $new_data[$prop] = '<hidden>';
                 }
             }

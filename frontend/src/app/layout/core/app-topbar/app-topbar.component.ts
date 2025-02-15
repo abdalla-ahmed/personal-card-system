@@ -27,7 +27,7 @@ export class AppTopbar implements OnInit {
                 separator: true
             },
             {
-                label: 'Profile',
+                label: 'Me',
                 items: [
                     {
                         label: 'Settings',

@@ -11,7 +11,7 @@ use App\Models\UserRole;
 use App\Models\User;
 use App\Models\UserModule;
 
-class PermissionService
+class Permission
 {
 
     /**
@@ -25,19 +25,19 @@ class PermissionService
             return true;
         }
 
-        $userHasPermission = UserModule::where('module_id', $moduleId)
+        $userHasModulePermission = UserModule::where('module_id', $moduleId)
             ->where('user_id', $user->id)
             ->where($action, true)
             ->exists();
-        if ($userHasPermission)
+        if ($userHasModulePermission)
             return true;
 
-        $userRoleIdList = $user->roles->select('role_id')->values();
-        $userRoleHasPermission = RoleModule::where('module_id', $moduleId)
-            ->whereIn('role_id', $userRoleIdList)
+        $userRolesIdList = $user->roles->select('role_id')->values();
+        $anyUserRoleHasModulePermission = RoleModule::where('module_id', $moduleId)
+            ->whereIn('role_id', $userRolesIdList)
             ->where($action, true)
             ->exists();
-        if ($userRoleHasPermission)
+        if ($anyUserRoleHasModulePermission)
             return true;
 
         return false;
@@ -48,19 +48,21 @@ class PermissionService
     */
     public static function checkModuleExtraPermission(User $user, int $extraPermissionId): bool
     {
-        // As you may notice, the default admin user cannot bypass a module's extra permissions.
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
 
-        $userModulePermissions = UserModulePermission::where('module_permission_id', $extraPermissionId)
+        $userHasModuleExtraPermission = UserModulePermission::where('module_permission_id', $extraPermissionId)
             ->where('user_id', $user->id)
             ->exists();
-        if ($userModulePermissions)
+        if ($userHasModuleExtraPermission)
             return true;
 
-        $userRoleIdList = UserRole::where('user_id', $user->id)->select('role_id')->get()->map(fn($x) => $x->role_id)->values();
-        $roleModulePermissions = RoleModulePermission::where('module_permission_id', $extraPermissionId)
-            ->whereIn('role_id', $userRoleIdList)
+        $userRolesIdList = UserRole::where('user_id', $user->id)->select('role_id')->get()->map(fn($x) => $x->role_id)->values();
+        $anyUserRoleHasModuleExtraPermission = RoleModulePermission::where('module_permission_id', $extraPermissionId)
+            ->whereIn('role_id', $userRolesIdList)
             ->exists();
-        if ($roleModulePermissions)
+        if ($anyUserRoleHasModuleExtraPermission)
             return true;
 
         return false;

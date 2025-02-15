@@ -161,8 +161,8 @@
 	</ng-template>
 	<ng-template #footer>
 		<div class="flex justify-between gap-4 mt-4 w-full">
-            <div class="">
-                <p-button *ngIf="!cardService.isNewEntity" [label]="form.value.active ? 'Deactivate': 'Reactivate'" (click)="cardService.toggleCardState()" [severity]="form.value.active ? 'danger': 'info'" outlined />
+            <div>
+                <p-button *ngIf="!cardService.isNewEntity && canChangeCardState" [label]="form.value.active ? 'Deactivate': 'Reactivate'" (click)="cardService.toggleCardState()" [severity]="form.value.active ? 'danger': 'info'" outlined />
             </div>
             <div class="space-x-4">
                 <p-button label="Cancel" (click)="cardService.hideCardDialog()" outlined />

@@ -26,7 +26,7 @@ class AuthService
      */
     public function generateToken(User $user, string $sessionId): array|null
     {
-        if (!$user || empty($sessionId))
+        if (empty($sessionId))
             return null;
 
         $atExpireTime = now()->addMinutes(config('sanctum.expiration'));
@@ -45,9 +45,6 @@ class AuthService
 
     public function revokeToken(User $user, string $sessionId)
     {
-        if (!$user)
-            return false;
-
         $affected = $user->tokens()
             ->where('name', "access_token_{$sessionId}")
             ->orWhere('name', "refresh_token_{$sessionId}")

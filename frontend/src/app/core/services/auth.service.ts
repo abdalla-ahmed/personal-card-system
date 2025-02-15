@@ -1,13 +1,18 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import {EventEmitter, inject, Injectable} from '@angular/core';
 import { UserManagerService } from './user-manager.service';
 import { Observable, of, tap } from 'rxjs';
 import { User } from '../models';
-import { AuthClientService } from './auth-client.service';
+import {AuthClientService, REFRESH_TOKEN} from './auth-client.service';
+import {SharedConstants} from "../constants";
+import {Router} from "@angular/router";
+import {HttpContext} from "@angular/common/http";
+import {RoleID} from "../../shared/enums";
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
+    private readonly router = inject(Router);
     public onUserLoggedIn = new EventEmitter<User>();
     public onTokenRefresh = new EventEmitter<User>();
     public onUserLoggedOut = new EventEmitter();
@@ -41,19 +46,30 @@ export class AuthService {
         }));
     }
 
-    doRefreshToken(): Observable<User> {
-        return this.authClient.refreshToken()
-            .pipe(tap(user => {
-                this.userManager.setUser(user);
-                this.onTokenRefresh.emit(user);
-            }));
-    }
-
     registerUser(username: string, email: string, password: string, passwordConfirmation: string): Observable<User> {
         return this.authClient.register({ username, email, password, passwordConfirmation })
             .pipe(tap(user => {
                 this.userManager.setUser(user);
                 this.onUserLoggedIn.emit(user);
+            }));
+    }
+
+    reAuth(redirectToLoginPageOnError: boolean = false) {
+        return this.doRefreshToken().pipe(tap({
+            error: () => {
+                this._localLogout();
+                if(redirectToLoginPageOnError) {
+                    this.router.navigate([SharedConstants.AUTH_PATH]);
+                }
+            }
+        }));
+    }
+
+    private doRefreshToken(): Observable<User> {
+        return this.authClient.refreshToken(new HttpContext().set(REFRESH_TOKEN, true))
+            .pipe(tap(user => {
+                this.userManager.setUser(user);
+                this.onTokenRefresh.emit(user);
             }));
     }
 
@@ -77,6 +93,11 @@ export class AuthService {
 
     get isSuperAdmin() {
         return this.user?.username == 'admin';
+    }
+
+    get isAdmin() {
+        const user = this.user;
+        return user?.username == 'admin' || user.roles.includes(RoleID.Admin);
     }
 
     get hasSession() {

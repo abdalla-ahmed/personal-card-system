@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Constants\ModuleID;
 use App\Models\Module;
 use App\Models\ModulePermission;
 use App\Models\Role;
@@ -26,6 +27,7 @@ class MainSeeder extends Seeder
         ['id' => 2, 'name' => 'Roles', 'category' => 'Administration'],
         ['id' => 3, 'name' => 'Users', 'category' => 'Administration'],
         ['id' => 4, 'name' => 'Cards', 'category' => 'Main'],
+        ['id' => 5, 'name' => 'User Profile', 'category' => 'Main'],
     ];
 
     private $modulePermissions = [
@@ -84,13 +86,17 @@ class MainSeeder extends Seeder
             $isAdmin = $role['id'] === 1;
 
             $roleModules = Module::all()->map(function ($module) use ($role, $isAdmin) {
+                $allowed = $isAdmin;
+                if($module->id == ModuleID::UserProfile || $module->id == ModuleID::Cards) {
+                    $allowed = true;
+                }
                 return [
                     'role_id' => $role['id'],
                     'module_id' => $module->id,
-                    'allow_view' => $isAdmin,
-                    'allow_create' => $isAdmin,
-                    'allow_update' => $isAdmin,
-                    'allow_delete' => $isAdmin,
+                    'allow_view' => $allowed,
+                    'allow_create' => $allowed,
+                    'allow_update' => $allowed,
+                    'allow_delete' => $allowed,
                 ];
             });
 

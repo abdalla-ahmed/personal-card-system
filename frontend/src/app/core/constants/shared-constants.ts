@@ -5,5 +5,4 @@ export class SharedConstants {
     static readonly AUTH_PATH = '/auth';
     static readonly SERVER_BASE_URL = PackageJson.config.baseUrl;
     static readonly API_BASE_URL = PackageJson.config.api.baseUrl;
-    static readonly API_REFRESH_TOKEN_URL = '/auth/refresh-token';
 }

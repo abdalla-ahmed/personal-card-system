@@ -5,17 +5,20 @@ namespace App\Constants;
 enum ActivityAction: string
 {
     // crud
-    case CREATE = 'Create';
-    case UPDATE = 'Update';
-    case DELETE = 'Delete';
-    case PERMISSIONS_UPDATE = 'Permissions Update';
-
-    // special
-    case LOGS_PURGE = 'Logs Clear';
+    case CREATE = 'Created';
+    case UPDATE = 'Updated';
+    case DELETE = 'Deleted';
 
     // user/auth
-    case USER_SIGNUP = 'User Signup';
-    case USER_LOGIN = 'User Login';
-    case USER_LOGOUT = 'User Logout';
+    case USER_SIGNUP = 'New User Registered';
+    case USER_LOGIN = 'User Logged In';
+    case USER_LOGOUT = 'User Logged Out';
     case USER_TOKEN_REFRESH = 'User Access Token Refresh';
+
+    // user profile
+    case USER_PERMISSIONS_UPDATE = 'User Special Permissions Updated';
+    case USER_PROFILE_UPDATE = 'User Profile Updated';
+
+    // activity log
+    case LOGS_PURGE = 'Activity Log Cleared';
 }

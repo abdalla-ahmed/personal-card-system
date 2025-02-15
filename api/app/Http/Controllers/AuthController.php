@@ -27,6 +27,14 @@ class AuthController extends ApiController
     {
         $data = $request->validated();
 
+        if (User::where('username', $data['username'])->exists()) {
+            return $this->resError('Username has been already taken');
+        }
+
+        if (User::where('email', $data['email'])->exists()) {
+            return $this->resError('Email address belongs to another user');
+        }
+
         $user = $this->userService->createUser($data['username'], $data['email'], $data['password']);
 
         $sessionId = $this->authService->generateSessionId();

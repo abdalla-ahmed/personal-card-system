@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import {HttpClientBase, IS_FILE_UPLOAD, SKIP_API_ERROR_RESPONSE_HANDLING} from './http-client-base';
+import {
+    HttpClientBase,
+    IS_FILE_UPLOAD,
+    SKIP_API_ERROR_RESPONSE_HANDLING,
+} from './http-client-base';
 import { HttpContext } from '@angular/common/http';
 
 export interface CardForListDto {
@@ -59,7 +63,7 @@ export interface UpdateCardStateDto {
 }
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class CardClientService extends HttpClientBase {
     constructor() {
@@ -75,27 +79,32 @@ export class CardClientService extends HttpClientBase {
     }
 
     publicGetById(id: number) {
-        return this.http.get<CardDto>(`${this.baseUrl}/public/cards/${id}`, {
-            context: new HttpContext().set(SKIP_API_ERROR_RESPONSE_HANDLING, true),
-        });
+        return this.get<CardDto>(
+            `public/cards/${id}`,
+            new HttpContext().set(SKIP_API_ERROR_RESPONSE_HANDLING, true),
+        );
     }
 
     createCard(dto: CreateCardDto, logoImageFile?: File) {
         const formData = new FormData();
-        formData.append("logoImageFile", logoImageFile);
-        formData.append("jsonData", JSON.stringify(dto));
-        return this.http.post(`${this.baseUrl}/cards`, formData, {
-            context: new HttpContext().set(IS_FILE_UPLOAD, true)
-        });
+        formData.append('logoImageFile', logoImageFile);
+        formData.append('jsonData', JSON.stringify(dto));
+        return this.post(
+            `cards`,
+            formData,
+            new HttpContext().set(IS_FILE_UPLOAD, true),
+        );
     }
 
     updateCard(dto: UpdateCardDto, logoImageFile?: File) {
         const formData = new FormData();
-        formData.append("logoImageFile", logoImageFile);
-        formData.append("jsonData", JSON.stringify(dto));
-        return this.http.post(`${this.baseUrl}/cards/${dto.id}`, formData, {
-            context: new HttpContext().set(IS_FILE_UPLOAD, true)
-        });
+        formData.append('logoImageFile', logoImageFile);
+        formData.append('jsonData', JSON.stringify(dto));
+        return this.post(
+            `cards/${dto.id}`,
+            formData,
+            new HttpContext().set(IS_FILE_UPLOAD, true),
+        );
     }
 
     deleteCard(id: number) {
@@ -104,5 +113,9 @@ export class CardClientService extends HttpClientBase {
 
     updateState(dto: UpdateCardStateDto) {
         return this.patch(`cards/${dto.id}`, dto);
+    }
+
+    generatePdf(htmlContent: string) {
+        return this.post<any>(`generate/pdf`, { html: htmlContent });
     }
 }

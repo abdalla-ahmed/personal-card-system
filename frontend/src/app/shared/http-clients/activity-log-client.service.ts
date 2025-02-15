@@ -47,18 +47,18 @@ export class ActivityLogClientService extends HttpClientBase {
     }
 
     all() {
-        return this.get<ActivityLogForListDto[]>(`activity-logs`).pipe(
+        return this.get<ActivityLogForListDto[]>(`activity-log`).pipe(
             map((x) => x.map((y) => ActivityLogForListDto.fromJson(y))),
         );
     }
 
     getById(id: number) {
-        return this.get<ActivityLogDto>(`activity-logs/${id}`).pipe(
+        return this.get<ActivityLogDto>(`activity-log/${id}`).pipe(
             map((x) => ActivityLogDto.fromJson(x)),
         );
     }
 
     purge() {
-        return this.delete(`activity-logs`);
+        return this.delete(`activity-log`);
     }
 }

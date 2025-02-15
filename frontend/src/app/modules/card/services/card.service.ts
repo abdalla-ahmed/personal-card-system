@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppToastService } from '../../../shared/services/app-toast.service';
 import { AppConfirmationService } from '../../../shared/services/app-confirmation.service';
 import { FileSelectEvent } from 'primeng/fileupload';
+import {AuthService} from "../../../core/services/auth.service";
 
 @Injectable({
     providedIn: 'root'
@@ -14,6 +15,7 @@ export class CardService {
     readonly toast = inject(AppToastService);
     readonly confirmation = inject(AppConfirmationService);
     readonly cardClient = inject(CardClientService);
+    readonly authService = inject(AuthService);
 
     formState = FormState.None;
     form: FormGroup;

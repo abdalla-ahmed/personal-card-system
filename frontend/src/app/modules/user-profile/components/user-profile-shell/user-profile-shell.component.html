@@ -1,0 +1,82 @@
+<p-card>
+    <ng-template #title>{{ currentRoute.title | async }}</ng-template>
+    <ng-template #subtitle>Manage your profile</ng-template>
+    <ng-template #content>
+        <form #formRef="ngForm" [formGroup]="form" (ngSubmit)="userProfileService.save()" pFocusTrap>
+            <p-tabs value="0">
+                <p-tablist>
+                    <p-tab value="0">Basic Information</p-tab>
+                </p-tablist>
+                <p-tabpanels>
+                    <p-tabpanel value="0">
+                        <div class="flex flex-col w-full gap-4">
+                            <div class="flex flex-row gap-4">
+                                @if (form.controls["username"]; as ctrl) {
+                                    <div class="flex flex-col w-1/2">
+                                        <p-inputgroup>
+                                            <p-floatlabel variant="in">
+                                                <input pInputText pSize="small" id="username" type="email" formControlName="username" />
+                                                <label for="username">Username</label>
+                                            </p-floatlabel>
+                                        </p-inputgroup>
+                                        <p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small">required.</p-message>
+                                    </div>
+                                }
+                                @if (form.controls["email"]; as ctrl) {
+                                    <div class="flex flex-col w-1/2">
+                                        <p-inputgroup>
+                                            <p-floatlabel variant="in">
+                                                <input pInputText pSize="small" id="email" type="email" formControlName="email" />
+                                                <label for="email">Email</label>
+                                            </p-floatlabel>
+                                        </p-inputgroup>
+                                        <p-message *ngIf="ctrl.dirty && ctrl.invalid" severity="error" variant="simple" size="small">required.</p-message>
+                                    </div>
+                                }
+                            </div>
+                            <div class="flex flex-row gap-4">
+                                @if (form.controls["password"]; as ctrl) {
+                                    <div class="flex flex-col w-1/2">
+                                        <div class="flex flex-row">
+                                            <p-message severity="secondary" variant="simple" size="small">
+                                                Leave it empty if you don't want to change it.
+                                            </p-message>
+                                        </div>
+                                        <div class="w-full">
+                                            <p-floatlabel variant="in">
+                                                <p-password
+                                                        size="small"
+                                                        [fluid]="true"
+                                                        inputId="password"
+                                                        [toggleMask]="true"
+                                                        [feedback]="false"
+                                                        formControlName="password"
+                                                        autocomplete="new-password"
+                                                />
+                                                <label for="password">Change Password</label>
+                                            </p-floatlabel>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </p-tabpanel>
+                </p-tabpanels>
+            </p-tabs>
+
+            <div class="flex flex-row w-full gap-4 mt-6 justify-center">
+                <div class="flex flex-col">
+                    <p-button
+                        label="Save changes"
+                        type="submit"
+                        severity="primary"
+                        icon="pi pi-save"
+                        styleClass="w-[150px]"
+                        [disabled]="!form.dirty"
+                    />
+                </div>
+            </div>
+        </form>
+    </ng-template>
+</p-card>
+

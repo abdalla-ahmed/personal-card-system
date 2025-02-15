@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { AppSharedModule } from '../../../app-shared.module';
 import { CardDto } from '../../http-clients/card-client.service';
-import { SharedConstants } from '../../../core/common/constants';
+import { SharedConstants } from '../../../core/constants';
 import { Menu } from 'primeng/menu';
 
 @Component({
@@ -35,7 +35,7 @@ export class PersonalCardComponent implements OnInit, OnDestroy {
     }
 
     qrCodeImageUrl() {
-        return `${SharedConstants.API_BASE_URL}/qr-code?entity_type=card&entity_id=${this.model().id}`;
+        return `${SharedConstants.API_BASE_URL}/generate/qr-code?entity_type=card&entity_id=${this.model().id}`;
     }
 
     protected actionClick(e) {

@@ -3,7 +3,7 @@
 	[modal]="true"
 	[(visible)]="visible"
 	[breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
-	[style]="{ width: '550px', height: '450px' }"
+	[style]="{ width: '550px', height: '480px' }"
     styleClass="min-w-[400px] min-h-[200px]"
     [focusTrap]="true"
     [focusOnShow]="true"
@@ -25,7 +25,7 @@
 					<p-tabpanel value="0">
 						<div class="flex flex-col gap-4">
 							@if (form.controls["username"]; as ctrl) {
-								 <div class="flex flex-row">
+								 <div class="flex flex-col">
 									<p-inputgroup>
 										<p-floatlabel variant="in">
 											<input pInputText pSize="small" id="username" type="email" formControlName="username" />
@@ -37,7 +37,7 @@
 							}
 
 							@if (form.controls["email"]; as ctrl) {
-								<div class="flex flex-row">
+								<div class="flex flex-col">
 									<p-inputgroup>
 										<p-floatlabel variant="in">
 											<input pInputText pSize="small" id="email" type="email" formControlName="email" />
@@ -64,6 +64,7 @@
                                                 [toggleMask]="true"
                                                 [feedback]="false"
                                                 formControlName="password"
+                                                autocomplete="new-password"
                                             />
                                             <label for="password">{{ userService.isCreate ? "New Password" : "Change Password" }}</label>
                                         </p-floatlabel>

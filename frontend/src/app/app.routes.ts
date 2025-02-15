@@ -55,6 +55,11 @@ export const appRoutes: Routes = [
                 loadChildren: () =>
                     import('./modules/log/routes').then((m) => m.routes),
             },
+            {
+                path: 'me',
+                loadChildren: () =>
+                    import('./modules/user-profile/routes').then((m) => m.routes),
+            },
         ],
     },
     { path: '**', component: Notfound },

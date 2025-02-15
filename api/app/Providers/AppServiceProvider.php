@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Constants\TokenAbility;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
@@ -36,10 +38,19 @@ class AppServiceProvider extends ServiceProvider
             DB::whenQueryingForLongerThan(threshold: 50 /* ms */, handler: function (Connection $connection, QueryExecuted $query) {
                 Log::warning("DB Query takes so long ($query->time ms): $query->sql");
             });
+
+            RateLimiter::for('api', function (Request $request) {
+                return Limit::perMinute(30)->by($request->ip());
+            });
+
+            RateLimiter::for('storage', function (Request $request) {
+                return Limit::perMinute(60)->by($request->ip());
+            });
+
+            // hook access token validation
+            $this->overrideSanctumConfigurationToSupportRefreshToken();
         }
 
-        // hook access token validation
-        $this->overrideSanctumConfigurationToSupportRefreshToken();
     }
 
     private function overrideSanctumConfigurationToSupportRefreshToken(): void

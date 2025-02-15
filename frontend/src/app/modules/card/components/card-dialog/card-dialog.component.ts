@@ -1,7 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, input, model, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, model, OnInit } from '@angular/core';
 import { AppSharedModule } from '../../../../app-shared.module';
 import { CardService } from '../../services/card.service';
-import {CardDto} from '../../../../shared/http-clients/card-client.service';
 import { PrimeNG } from 'primeng/config';
 
 @Component({
@@ -14,9 +13,7 @@ import { PrimeNG } from 'primeng/config';
 })
 export class CardDialogComponent implements OnInit {
     visible = model.required<boolean>();
-
     readonly cardService = inject(CardService);
-    readonly primeng = inject(PrimeNG);
 
     constructor() {}
 
@@ -24,5 +21,9 @@ export class CardDialogComponent implements OnInit {
 
     get form() {
         return this.cardService.form;
+    }
+
+    get canChangeCardState() {
+        return this.cardService.authService.isAdmin;
     }
 }

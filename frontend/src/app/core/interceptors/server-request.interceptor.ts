@@ -1,13 +1,20 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpContext, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { SharedConstants } from '../common/constants';
-import { IS_FILE_UPLOAD } from '../../shared/http-clients/http-client-base';
+import { SharedConstants } from '../constants';
+import {
+    IS_FILE_UPLOAD,
+    MAIN_API,
+} from '../../shared/http-clients/http-client-base';
+import {REFRESH_TOKEN} from "../services/auth-client.service";
 
 export const ServerRequestInterceptor: HttpInterceptorFn = (req, next) => {
-
     // continue as normal if the outgoing request is not heading to our api
-    if (!req.url.toLowerCase().startsWith(SharedConstants.API_BASE_URL.toLowerCase())) {
+    if (
+        !req.url
+            .toLowerCase()
+            .startsWith(SharedConstants.API_BASE_URL.toLowerCase())
+    ) {
         return next(req);
     }
 
@@ -30,14 +37,17 @@ export const ServerRequestInterceptor: HttpInterceptorFn = (req, next) => {
     }
 
     if (authService.hasUser) {
-        if (authService.isLoggedIn) {
+        if (authService.isLoggedIn && req.context.get(REFRESH_TOKEN) === false) {
             headers['Authorization'] = `Bearer ${authService.accessToken}`;
-        } else if (req.url.startsWith(`${SharedConstants.API_BASE_URL}${SharedConstants.API_REFRESH_TOKEN_URL}`)) {
+        } else if (req.context.get(REFRESH_TOKEN) === true) {
             headers['Authorization'] = `Bearer ${authService.refreshToken}`;
         }
     }
 
-    const reqClone = req.clone({ setHeaders: headers });
+    const reqClone = req.clone({
+        setHeaders: headers,
+        context: new HttpContext().set(MAIN_API, true),
+    });
+
     return next(reqClone);
 };
-

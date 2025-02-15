@@ -61,7 +61,6 @@
             <div class="layout-topbar-menu-content">
                 <button (click)="menu.toggle($event)" type="button" class="layout-topbar-action">
                     <i class="pi pi-user"></i>
-                    <span>Profile</span>
                 </button>
             </div>
         </div>
@@ -72,7 +71,7 @@
 <p-menu #menu [model]="items" [popup]="true" class="flex justify-center" styleClass="w-full md:w-60">
     <ng-template #start>
         <div class="flex items-center m-1 mb-0">
-            <a routerLink="/user/profile" pRipple class="p-menu-item-link relative overflow-hidden w-full border-0 bg-transparent flex items-start hover:bg-surface-100 dark:hover:bg-surface-800 rounded-sm cursor-pointer transition-colors duration-200">
+            <a routerLink="/internal/me" pRipple class="p-menu-item-link relative overflow-hidden w-full border-0 bg-transparent flex items-start hover:bg-surface-100 dark:hover:bg-surface-800 rounded-sm cursor-pointer transition-colors duration-200">
                 <p-avatar [label]="user.username[0].toUpperCase()" class="mr-4" size="large" shape="circle" />
                 <span class="inline-flex flex-col">
                     <span class="font-bold">{{user.username}}</span>

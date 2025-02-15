@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\ModuleID;
 use App\Constants\UserSecurityLevel;
 use App\Models\Module;
 use App\Models\ModulePermission;
@@ -53,6 +54,17 @@ class UserService
         UserModule::insert($userModules->toArray());
 
         return $user;
+    }
+
+    public function mapUserWithRoles(User $user)
+    {
+        return [
+            'id' => $user->id,
+            'username' => $user->username,
+            'email' => $user->email,
+            'securityLevel' => $user->security_level,
+            'roles' => $user->roles->map(fn($x) => $x->role_id)->values(),
+        ];
     }
 
     public function mapUserWithAccessTokenAndPermissions(User $user, array $token): array
@@ -135,6 +147,14 @@ class UserService
         return [
             'userId' => $user->id,
             'permissions' => $permissions,
+        ];
+    }
+
+    public function mapUserProfile(User $user): array
+    {
+        return [
+            'username' => $user->username,
+            'email' => $user->email,
         ];
     }
 }

@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { AppToastService } from '../../../shared/services/app-toast.service';
 import { AppConfirmationService } from '../../../shared/services/app-confirmation.service';
 import { AuthService } from '../../../core/services/auth.service';
+import {firstValueFrom} from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -83,12 +84,12 @@ export class UserPermissionsService {
         } as UpdateUserPermissionsDto;
 
         this.userClient.updatePermissions(dto).subscribe({
-            next: () => {
-                this.toast.success('User permissions updated successfully');
+            next: async () => {
                 this.hideUserPermissionsDialog();
+                this.toast.success('User permissions updated successfully');
                 if (dto.userId === this.authService.user.userId) {
                     // refresh current user's stored permissions
-                    this.authService.doRefreshToken().subscribe();
+                    await firstValueFrom(this.authService.reAuth());
                 }
             }
         });

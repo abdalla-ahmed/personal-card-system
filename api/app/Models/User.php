@@ -52,7 +52,7 @@ class User extends Authenticatable
 
     public function isSuperAdmin(): bool
     {
-        return $this->username == 'admin';
+        return $this->username == 'admin'; // special username
     }
 
     public function roles()

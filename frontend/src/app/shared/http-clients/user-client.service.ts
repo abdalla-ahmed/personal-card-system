@@ -39,6 +39,17 @@ export interface UpdateUserDto {
     roles?: number[];
 }
 
+export interface UserProfileDto {
+    username?: string;
+    email?: string;
+}
+
+export interface UpdateUserProfileDto {
+    username?: string;
+    email?: string;
+    password?: string;
+}
+
 export class UserModulePermission {
     id?: number;
     description?: string;
@@ -109,5 +120,13 @@ export class UserClientService extends HttpClientBase {
 
     updatePermissions(dto: UpdateUserPermissionsDto) {
         return this.put(`users/${dto.userId}/permissions`, dto);
+    }
+
+    currentUserProfile() {
+        return this.get<UserProfileDto>(`users/current-user/profile`);
+    }
+
+    updateCurrentUserProfile(dto: UpdateUserProfileDto) {
+        return this.put(`users/current-user/profile`, dto);
     }
 }
