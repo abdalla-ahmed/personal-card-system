@@ -1,20 +1,15 @@
-import { HttpContext, HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { SharedConstants } from '../constants';
 import {
-    IS_FILE_UPLOAD,
-    MAIN_API,
+    IS_FILE_UPLOAD, MAIN_API,
 } from '../../shared/http-clients/http-client-base';
 import {REFRESH_TOKEN} from "../services/auth-client.service";
 
 export const ServerRequestInterceptor: HttpInterceptorFn = (req, next) => {
     // continue as normal if the outgoing request is not heading to our api
-    if (
-        !req.url
-            .toLowerCase()
-            .startsWith(SharedConstants.API_BASE_URL.toLowerCase())
-    ) {
+    if (req.context.get(MAIN_API) === false) {
         return next(req);
     }
 
@@ -45,8 +40,7 @@ export const ServerRequestInterceptor: HttpInterceptorFn = (req, next) => {
     }
 
     const reqClone = req.clone({
-        setHeaders: headers,
-        context: new HttpContext().set(MAIN_API, true),
+        setHeaders: headers
     });
 
     return next(reqClone);

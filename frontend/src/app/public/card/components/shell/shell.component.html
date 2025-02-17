@@ -4,19 +4,22 @@
         <div class="flex flex-col items-center justify-center gap-6">
             <div class="flex flex-row">
                 <app-personal-card
-                    #cardRef
-                    id="printable-section"
                     [model]="card()"
+                    id="printable-card"
                 >
                 </app-personal-card>
             </div>
             <div class="flex flex-row gap-6">
                 <div class="flex flex-col">
-                    <p-button label="Print" (click)="onPrintClick()" severity="secondary" icon="pi pi-print"/>
+                    @if(card()) {
+                        <p-button label="Print" (click)="onPrintClick()" severity="primary" icon="pi pi-print"/>
+                    } @else {
+                        <p-skeleton width="6rem" height="3rem" />
+                    }
                 </div>
-                <div class="flex flex-col">
-                    <p-button label="Export" (click)="onExportClick()" severity="primary" icon="pi pi-file-pdf"/>
-                </div>
+<!--                <div class="flex flex-col">-->
+<!--                    <p-button label="Export" (click)="onExportClick()" severity="secondary" icon="pi pi-file-pdf"/>-->
+<!--                </div>-->
             </div>
         </div>
     </div>

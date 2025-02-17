@@ -1,54 +1,98 @@
-<div *ngIf="model()" class="flex business-card w-[370px] h-[200px] shadow-md overflow-hidden">
-    <div class="w-[30%] grid grid-cols-1 justify-center p-2 mt-4">
-        <div class="flex flex-col justify-center items-center overflow-hidden">
-            <div class="flex flex-row">
-                <img class="card-logo" [src]="logoImageUrl()" alt="Logo" />
+@if(model()) {
+    <div class="flex business-card w-[370px] h-[200px] shadow-md overflow-hidden
+    border border-black border-opacity-25 dark:border-white dark:border-opacity-15">
+        <div class="w-[30%] grid grid-cols-1 justify-center p-2 mt-4">
+            <div class="flex flex-col justify-center items-center overflow-hidden">
+                <div class="flex flex-row">
+                    <img class="card-logo" [src]="logoImageUrl()" alt="Logo" />
+                </div>
+                <div class="flex flex-row text-2xl text-surface-500 dark:text-surface-200 font-semibold mt-2">
+                    {{ model().companyName }}
+                </div>
             </div>
-            <div class="flex flex-row text-2xl text-surface-500 dark:text-surface-200 font-semibold mt-2">
-                {{ model().companyName }}
+            <div class="flex flex-row overflow-hidden">
+                <div class="text-xs text-surface-500 dark:text-surface-200">
+                    {{ model().companyAddress }}
+                </div>
             </div>
         </div>
-        <div class="flex flex-row overflow-hidden">
-            <div class="text-xs text-surface-500 dark:text-surface-200">
-                {{ model().companyAddress }}
+        <div class="w-[70%] flex flex-col pb-2">
+            <div class="flex flex-row overflow-hidden justify-between">
+                <div class="flex flex-col font-semibold text-xl mt-6">{{ model().fullName }}</div>
+                <div class="flex flex-col">
+                    <div id="card-btn-actions-menu-container">
+                        <p-button *ngIf="menu()"
+                                  (click)="actionClick($event)"
+                                  severity="secondary"
+                                  size="large"
+                                  icon="pi pi-ellipsis-v"
+                                  text
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-row text-surface-500 dark:text-surface-200 text-sm overflow-hidden">
+                {{ model().position }}
+            </div>
+            <div class="grid grid-cols-2 text-surface-500 dark:text-surface-200 overflow-hidden">
+                <div class="flex flex-col gap-2 mt-[40px] text-xs font-semibold">
+                    <div class="flex flex-row items-center">
+                        <i class="pi pi-mobile mr-2 card-icon"></i>
+                        {{ model().mobile }}
+                    </div>
+                    <div class="flex flex-row items-center">
+                        <i class="pi pi-phone mr-2 card-icon"></i>
+                        {{ model().telephone }}
+                    </div>
+                    <div class="flex flex-row items-center">
+                        <i class="pi pi-envelope mr-2 card-icon"></i>
+                        {{ model().email }}
+                    </div>
+                    <div class="flex flex-row items-center">
+                        <i class="pi pi-map-marker mr-2 card-icon"></i>
+                        {{ model().address }}
+                    </div>
+                </div>
+                <div class="flex flex-col mr-4">
+                    <img
+                            class="w-[80px] justify-self-start self-end rounded-lg border-4 border-gray-400 border-opacity-25"
+                            [src]="qrCodeImageUrl()"
+                            alt="QRCode"
+                    />
+                </div>
             </div>
         </div>
     </div>
-    <div class="w-[70%] flex flex-col pb-3 mt-1">
-        <div *ngIf="menu()" class="flex flex-row overflow-hidden justify-end items-end">
-            <p-button (click)="actionClick($event)" severity="secondary" size="small" icon="pi pi-ellipsis-v" text />
-        </div>
-        <div class="flex flex-row font-semibold text-xl overflow-hidden">{{ model().fullName }}</div>
-        <div class="flex flex-row text-surface-500 dark:text-surface-200 text-sm overflow-hidden">
-            {{ model().position }}
-        </div>
-        <div class="grid grid-cols-2 text-surface-500 dark:text-surface-200 overflow-hidden">
-            <div class="flex flex-col gap-1 mt-[50px] text-xs font-semibold">
-                <div class="flex flex-row items-center">
-                    <i class="pi pi-mobile mr-2 card-icon"></i>
-                    {{ model().mobile }}
-                </div>
-                <div class="flex flex-row items-center">
-                    <i class="pi pi-phone mr-2 card-icon"></i>
-                    {{ model().telephone }}
-                </div>
-                <div class="flex flex-row items-center">
-                    <i class="pi pi-envelope mr-2 card-icon"></i>
-                    {{ model().email }}
-                </div>
-                <div class="flex flex-row items-center">
-                    <i class="pi pi-map-marker mr-2 card-icon"></i>
-                    {{ model().address }}
-                </div>
-            </div>
-            <div class="flex flex-col mr-4">
-                <img
-                    class="w-[80px] justify-self-start self-end rounded-lg border-4 border-gray-400 border-opacity-20"
-                    [src]="qrCodeImageUrl()"
-                    alt="QRCode"
-                />
-            </div>
-        </div>
-    </div>
-</div>
 
+} @else {
+    <div class="flex business-card w-[370px] h-[200px] shadow-md overflow-hidden
+    border border-black border-opacity-25 dark:border-white dark:border-opacity-15">
+        <ul class="list-none p-4 w-full">
+            <li class="mb-4">
+                <div class="flex w-full">
+                    <p-skeleton size="5rem" styleClass="mr-2" />
+                    <div class="self-center" style="flex: 1">
+                        <p-skeleton width="75%" styleClass="mb-2" height="2rem" />
+                        <p-skeleton width="50%" />
+                    </div>
+                </div>
+            </li>
+            <li class="mb-4">
+                <div class="flex">
+                       <div class="self-center" style="flex: 1">
+                        <p-skeleton width="75%" styleClass="mb-2" />
+                        <p-skeleton width="50%" />
+                    </div>
+                </div>
+            </li>
+            <li class="mb-4">
+                <div class="flex">
+                    <div class="self-center" style="flex: 1">
+                        <p-skeleton width="75%" styleClass="mb-2" />
+                        <p-skeleton width="50%" />
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+}

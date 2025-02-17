@@ -6,6 +6,7 @@ import { AppToastService } from '../../../shared/services/app-toast.service';
 import { AppConfirmationService } from '../../../shared/services/app-confirmation.service';
 import { FileSelectEvent } from 'primeng/fileupload';
 import {AuthService} from "../../../core/services/auth.service";
+import {ElementPrinterService, PrintOptions} from "../../../shared/services/element-printer.service";
 
 @Injectable({
     providedIn: 'root'
@@ -16,6 +17,7 @@ export class CardService {
     readonly confirmation = inject(AppConfirmationService);
     readonly cardClient = inject(CardClientService);
     readonly authService = inject(AuthService);
+    readonly elementPrinterService = inject(ElementPrinterService);
 
     formState = FormState.None;
     form: FormGroup;
@@ -158,5 +160,19 @@ export class CardService {
 
     onLogoFileSelected(e: FileSelectEvent) {
         this.selectedLogoFile = e.files[0];
+    }
+
+    printCard(elementId: string) {
+        const printOptions = new PrintOptions({
+            printSectionId: elementId,
+            printTitle: "Card Print",
+            openNewTab: false,
+            closeWindow: true,
+            useExistingCss: true,
+            hideElementsById: ['#card-btn-actions-menu-container'],
+           // bodyClass: 'flex m-5',
+            //htmlClass: 'app-dark',
+        });
+        this.elementPrinterService.print(printOptions);
     }
 }

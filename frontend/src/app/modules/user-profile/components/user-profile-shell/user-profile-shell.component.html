@@ -1,6 +1,6 @@
 <p-card>
     <ng-template #title>{{ currentRoute.title | async }}</ng-template>
-    <ng-template #subtitle>Manage your profile</ng-template>
+    <ng-template #subtitle>Manage your profile information</ng-template>
     <ng-template #content>
         <form #formRef="ngForm" [formGroup]="form" (ngSubmit)="userProfileService.save()" pFocusTrap>
             <p-tabs value="0">

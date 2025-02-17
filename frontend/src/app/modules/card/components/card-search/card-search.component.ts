@@ -27,8 +27,6 @@ export class CardSearchComponent implements OnInit, OnDestroy {
     readonly toast = inject(AppToastService);
     readonly currentRoute = inject(ActivatedRoute);
 
-    @ViewChild('rowMenu') rowMenu!: Menu;
-
     rowActions: MenuItem[] = [];
 
     cards = signal<CardForListDto[]>([]);
@@ -64,6 +62,12 @@ export class CardSearchComponent implements OnInit, OnDestroy {
                 label: 'Edit',
                 command: (e) => {
                     this.cardService.showEditCardDialog(this.selectedCard);
+                },
+            },
+            {
+                label: 'Print',
+                command: (e) => {
+                    this.cardService.printCard(`printable-card-${this.selectedCard.id}`);
                 },
             },
             {

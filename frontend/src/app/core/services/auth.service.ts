@@ -66,7 +66,7 @@ export class AuthService {
     }
 
     private doRefreshToken(): Observable<User> {
-        return this.authClient.refreshToken(new HttpContext().set(REFRESH_TOKEN, true))
+        return this.authClient.refreshToken()
             .pipe(tap(user => {
                 this.userManager.setUser(user);
                 this.onTokenRefresh.emit(user);

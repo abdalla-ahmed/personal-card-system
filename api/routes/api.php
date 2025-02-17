@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PdfController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ActivityLogController;
@@ -15,8 +14,6 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 Route::get('/generate/qr-code', [QRCodeController::class, 'generateQrCode']);
-Route::post('/generate/pdf', [PdfController::class, 'generatePdf2']);
-
 Route::get('/public/cards/{card}', [CardController::class, 'showPublic']);
 
 

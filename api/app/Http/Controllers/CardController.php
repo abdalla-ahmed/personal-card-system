@@ -19,7 +19,6 @@ class CardController extends ApiController
     {
         $currentUser = User::select(['id', 'security_level'])->find(Auth::id());
         $currentUserRoles = UserRole::where('user_id', $currentUser->id)->select(['user_id', 'role_id'])->get();
-        $cards = [];
 
         if ($currentUserRoles->contains('role_id', '=', 1)) { // current user is in admin role
             $cards = Card::with('user:security_level')

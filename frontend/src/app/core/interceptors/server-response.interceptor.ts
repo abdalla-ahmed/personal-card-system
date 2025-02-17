@@ -1,8 +1,7 @@
 import {
     HttpErrorResponse,
     HttpEventType,
-    HttpInterceptorFn,
-    HttpResponse,
+    HttpInterceptorFn
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, finalize, map, tap } from 'rxjs';
@@ -13,17 +12,24 @@ import { Router } from '@angular/router';
 import { SharedConstants } from '../constants';
 import { UserManagerService } from '../services/user-manager.service';
 import { AppSession } from '../models';
-import {MAIN_API, SKIP_API_ERROR_RESPONSE_HANDLING} from '../../shared/http-clients/http-client-base';
+import {
+    NO_LOADER,
+    MAIN_API,
+    SKIP_API_ERROR_RESPONSE_HANDLING
+} from '../../shared/http-clients/http-client-base';
 import { REFRESH_TOKEN } from '../services/auth-client.service';
 
 export const ServerResponseInterceptor: HttpInterceptorFn = (req, next) => {
     const spinner = inject(AppSpinnerService);
-    spinner.show();
     const router = inject(Router);
     const toast = inject(AppToastService);
     const authService = inject(AuthService);
     const userManagerService = inject(UserManagerService);
-
+    
+    if (req.context.get(NO_LOADER) === false) {
+        spinner.show();
+    }
+    
     const defaultErrMsg = 'An unknown error occurred.';
 
     return next(req).pipe(
@@ -33,17 +39,7 @@ export const ServerResponseInterceptor: HttpInterceptorFn = (req, next) => {
             }
 
             // if the outgoing request was not heading to our api, don't check the response
-            if (
-                req.url
-                    .toLowerCase()
-                    .startsWith(SharedConstants.API_BASE_URL.toLowerCase())
-                && req.context.get(MAIN_API) === false
-            ) {
-                console.warn('api request context is missing');
-            }
-
-
-            if(req.context.get(MAIN_API) === false) {
+            if (req.context.get(MAIN_API) === false) {
                 throw err;
             }
 
@@ -84,7 +80,6 @@ export const ServerResponseInterceptor: HttpInterceptorFn = (req, next) => {
                 if (!authService.hasUser) {
                     router.navigate([SharedConstants.AUTH_PATH]);
                 } else if (req.context.get(REFRESH_TOKEN) === false) {
-                    debugger
                     authService.reAuth(true).subscribe({
                         next: () => {
                             toast.info('You has been re-logged in.');
@@ -113,6 +108,10 @@ export const ServerResponseInterceptor: HttpInterceptorFn = (req, next) => {
             }
             return event;
         }),
-        finalize(() => spinner.hide()),
+        finalize(() => {
+            if (req.context.get(NO_LOADER) === false) {
+                spinner.hide();
+            }
+        }),
     );
 };

@@ -42,9 +42,9 @@ export class AuthClientService extends HttpClientBase {
         );
     }
 
-    refreshToken(context?: HttpContext) {
-        return this.post<User>(`auth/refresh-token`, {}, context).pipe(
-            map((res) => User.fromJson(res)),
-        );
+    refreshToken() {
+        return this.post<User>(`auth/refresh-token`, {}, [
+            { token: REFRESH_TOKEN, value: true },
+        ]).pipe(map((res) => User.fromJson(res)));
     }
 }
